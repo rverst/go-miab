@@ -35,8 +35,8 @@ var dnsCmd = &cobra.Command{
 	Short: "Get existing dns entries.",
 	Long: `Get all dns entries of the server, use the domain-flag to filter the output.
 			Due to a wired behavior of the Mail-in-a-box API, you can use the qname-flag and the rtype-flag
-			to filter exactly one record. But if you use the qname-flag, the rtype-flag defaults to 'A'. 
-			In this case the the domain-flag will be ignored`,
+			to filter exactly one record, in this case the the domain-flag will be ignored. 
+			NOTE: If you use the qname-flag, the rtype-flag defaults to 'A'.`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -91,6 +91,24 @@ such as typical A records (without round-robin).`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		rtype := miab.NONE
+		if r, err := cmd.Flags().GetString("rtype"); err == nil {
+			rtype = miab.ResourceType(r)
+		}
+		qname, _ := cmd.Flags().GetString("qname")
+		value, _ := cmd.Flags().GetString("value")
+
+		if value == "" {
+			dynDnsUpdate(rtype, qname, value, false)
+		}
+
+		if s, err := miab.SetDns(&config, qname, rtype, value); !s || err != nil {
+			if err != nil {
+				fmt.Println(err)
+			}
+			os.Exit(1)
+		}
+
 	},
 }
 
@@ -102,6 +120,22 @@ var dnsAddCmd = &cobra.Command{
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		rtype := miab.NONE
+		if r, err := cmd.Flags().GetString("rtype"); err == nil {
+			rtype = miab.ResourceType(r)
+		}
+		qname, _ := cmd.Flags().GetString("qname")
+		value, _ := cmd.Flags().GetString("value")
+
+		if value == "" {
+			dynDnsUpdate(rtype, qname, value, true)
+		}
+		if s, err := miab.AddDns(&config, qname, rtype, value); !s || err != nil {
+			if err != nil {
+				fmt.Println(err)
+			}
+			os.Exit(1)
+		}
 	},
 }
 
@@ -113,5 +147,39 @@ qname-flag and rtype-flag.`,
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		rtype := miab.NONE
+		if r, err := cmd.Flags().GetString("rtype"); err == nil {
+			rtype = miab.ResourceType(r)
+		}
+		qname, _ := cmd.Flags().GetString("qname")
+		value, _ := cmd.Flags().GetString("value")
+
+		if s, err := miab.DeleteDns(&config, qname, rtype, value); !s || err != nil {
+			if err != nil {
+				fmt.Println(err)
+			}
+			os.Exit(1)
+		}
 	},
+}
+
+func dynDnsUpdate(rtype miab.ResourceType, qname, value string, add bool) {
+	if rtype == miab.A {
+		if s, err := miab.SetOrAddAddressRecord(&config, miab.TCP4, qname, value, add); !s || err != nil {
+			if err != nil {
+				fmt.Println(err)
+			}
+			os.Exit(1)
+		}
+	} else if rtype == miab.AAAA {
+		if s, err := miab.SetOrAddAddressRecord(&config, miab.TCP6, qname, value, add); !s || err != nil {
+			if err != nil {
+				fmt.Println(err)
+			}
+			os.Exit(1)
+		} else {
+			fmt.Println("The value-flag can only be omitted is rtype-flag is 'A' or 'AAAA'.")
+			os.Exit(1)
+		}
+	}
 }
