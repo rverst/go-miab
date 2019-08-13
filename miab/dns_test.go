@@ -214,7 +214,7 @@ func TestUpdateDns(t *testing.T) {
 	defer ts.Close()
 
 	c, _ := NewConfig("test", "secret", ts.URL)
-	b, err := UpdateDns(c, "tcp4", "test.example.org", "")
+	b, err := SetOrAddAddressRecord(c, "tcp4", "test.example.org", "")
 
 	if err != nil {
 		t.Errorf("error from function: %v", err)
@@ -228,7 +228,7 @@ func TestUpdateDns(t *testing.T) {
 	defer ts.Close()
 
 	c, _ = NewConfig("test", "secret", ts.URL)
-	b, err = UpdateDns(c, "tcp4", "test.example.org", "127.0.0.1")
+	b, err = SetOrAddAddressRecord(c, "tcp4", "test.example.org", "127.0.0.1")
 
 	if err != nil {
 		t.Errorf("error from function: %v", err)
@@ -242,7 +242,7 @@ func TestUpdateDns(t *testing.T) {
 	defer ts.Close()
 
 	c, _ = NewConfig("test", "secret", ts.URL)
-	b, err = UpdateDns(c, "tcp6", "test.example.org", "")
+	b, err = SetOrAddAddressRecord(c, "tcp6", "test.example.org", "")
 
 	if err != nil {
 		t.Errorf("error from function: %v", err)
@@ -256,7 +256,7 @@ func TestUpdateDns(t *testing.T) {
 	defer ts.Close()
 
 	c, _ = NewConfig("test", "secret", ts.URL)
-	b, err = UpdateDns(c, "tcp6", "test.example.org", "127.0.0.1")
+	b, err = SetOrAddAddressRecord(c, "tcp6", "test.example.org", "127.0.0.1")
 
 	if err != nil {
 		t.Errorf("error from function: %v", err)

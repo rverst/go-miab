@@ -14,6 +14,7 @@ import (
 )
 
 type ResourceType string
+type NetworkType string
 
 var (
 	regexQname     = *regexp.MustCompile(`^\*?\.?(?:[a-zA-Z0-9-]{2,63}\.?)+\.([a-zA-Z]{2,})$`)
@@ -33,6 +34,11 @@ const (
 	SSHFP = ResourceType(`SSHFP`)
 	CAA   = ResourceType(`CAA`)
 	NS    = ResourceType(`NS`)
+)
+
+const  (
+	TCP4 = NetworkType(`tcp4`)
+	TCP6 = NetworkType(`tcp6`)
 )
 
 var AllResourceTypes = []ResourceType{A, AAAA, TXT, CNAME, MX, SRV, SSHFP, CAA, NS}
@@ -197,18 +203,18 @@ func DeleteDns(c *Config, qname string, rtype ResourceType, value string) (bool,
 	return execDns(c, http.MethodDelete, qname, rtype, value)
 }
 
-// Updates a custom A or AAAA record of the qname. If the value is empty, the server will take the
+// Sets or Adds a custom A or AAAA record of the qname. If the value is empty, the server will take the
 // IPv4 or IPv6 address of the remote host as the value - quite handy for dynamic DNS!
 // You have to explicitly set network to `tcp4` or `tcp6` to set the correct record!
-// Consider using UpdateDns4 or UpdateDns6 instead.
-// Returns true if the DNS was updated
-func UpdateDns(c *Config, network, qname, value string) (bool, error) {
+// Consider using UpdateDns4 or UpdateDns6 for dynamic DNS!
+// Returns true if the DNS was set or updated.
+func SetOrAddAddressRecord(c *Config, network NetworkType, qname, value string, add bool) (bool, error) {
 
 	if !regexQname.MatchString(qname) {
 		return false, errInvQname
 	}
 
-	if network != "tcp4" && network != "tcp6" {
+	if network != TCP4 && network != TCP6 {
 		return false, errInvNet
 	}
 
@@ -223,12 +229,16 @@ func UpdateDns(c *Config, network, qname, value string) (bool, error) {
 	}}
 
 	rtype := A
-	if network == "tcp6" {
+	if network == TCP6 {
 		rtype = AAAA
 	}
 	client := &http.Client{Transport: tr}
 
-	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/%s", c.url(), dnsPath(qname, rtype)), strings.NewReader(value))
+	method := http.MethodPut
+	if add {
+		method = http.MethodPost
+	}
+	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", c.url(), dnsPath(qname, rtype)), strings.NewReader(value))
 
 	if err != nil {
 		return false, err
@@ -256,12 +266,12 @@ func UpdateDns(c *Config, network, qname, value string) (bool, error) {
 // IPv4 address of the remote host as the value - quite handy for dynamic DNS!
 // Returns true if the DNS was updated
 func UpdateDns4(c *Config, qname, value string) (bool, error) {
-	return UpdateDns(c, "tcp4", qname, value)
+	return SetOrAddAddressRecord(c, "tcp4", qname, value, false)
 }
 
 // Updates a custom AAAA record of the qname. If the value is empty, the server will take the
 // IPv6 address of the remote host as the value - quite handy for dynamic DNS!
 // Returns true if the DNS was updated
 func UpdateDns6(c *Config, qname, value string) (bool, error) {
-	return UpdateDns(c, "tcp6", qname, value)
+	return SetOrAddAddressRecord(c, "tcp6", qname, value, false)
 }
