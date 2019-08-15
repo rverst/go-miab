@@ -25,9 +25,11 @@ func (a AliasDomains) ToString(format Formats) string {
 
 func (a AliasDomains) String() string {
 	r := strings.Builder{}
-	for _, x := range a {
+	for i, x := range a {
 		r.WriteString(x.String())
-		r.WriteString("\n")
+		if i < len(a) - 1 {
+			r.WriteByte('\n')
+		}
 	}
 	return r.String()
 }
@@ -45,8 +47,11 @@ func (a AliasDomain) String() string {
 	r := strings.Builder{}
 	r.WriteString(a.Domain)
 	r.WriteString(":\n")
-	for _, x := range a.Aliases {
-		r.WriteString(fmt.Sprintf("\t%s -> %s\n", x.Address, strings.Join(x.ForwardsTo, ", ")))
+	for i, x := range a.Aliases {
+		r.WriteString(fmt.Sprintf("\t%s -> %s", x.Address, strings.Join(x.ForwardsTo, ", ")))
+		if i < len(a.Aliases) - 1 {
+			r.WriteByte('\n')
+		}
 	}
 	return r.String()
 }

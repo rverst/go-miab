@@ -26,9 +26,11 @@ type MailDomains []MailDomain
 
 func (m MailDomains) String() string {
 	r := strings.Builder{}
-	for _, x := range m {
+	for i, x := range m {
 		r.WriteString(x.String())
-		r.WriteString("\n")
+		if i < len(m) - 1 {
+			r.WriteString("\n")
+		}
 	}
 	return r.String()
 }
@@ -60,8 +62,14 @@ func (m MailDomain) String() string {
 	r := strings.Builder{}
 	r.WriteString(m.Domain)
 	r.WriteString(":\n")
-	for _, u := range m.Users {
-		r.WriteString(fmt.Sprintf("\t%s\n", u.Email))
+	for i, u := range m.Users {
+		if u.Status != Active {
+			continue
+		}
+		if i > 0 {
+			r.WriteByte('\n')
+		}
+		r.WriteString(fmt.Sprintf("\t%s", u.Email))
 	}
 	return r.String()
 }
