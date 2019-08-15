@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -18,9 +19,9 @@ type NetworkType string
 
 var (
 	regexQname     = *regexp.MustCompile(`^\*?\.?(?:[a-zA-Z0-9-]{2,63}\.?)+\.([a-zA-Z]{2,})$`)
-	errInvQname    = errors.New("'qname' seems to be invalid")
-	errInvNet      = errors.New("'network' has to be `tcp4` or `tcp6`")
-	errRtypeNotSet = errors.New("'rtype' has to be set")
+	ErrInvQname    = errors.New("'qname' seems to be invalid")
+	ErrInvNet      = errors.New("'network' has to be `tcp4` or `tcp6`")
+	ErrRtypeNotSet = errors.New("'rtype' has to be set")
 )
 
 const (
@@ -84,7 +85,12 @@ func (r Records) Print(format Formats) {
 }
 
 func (r Records) ToString(format Formats) string {
-	return toString(r, format)
+	s, err := toString(r, format)
+	if err != nil {
+		fmt.Println("unexpected error", err)
+		os.Exit(1)
+	}
+	return s
 }
 
 func (r Records) String() string {
@@ -107,7 +113,12 @@ func (r Record) Print(format Formats) {
 }
 
 func (r Record) ToString(format Formats) string {
-	return toString(r, format)
+	s, err := toString(r, format)
+	if err != nil {
+		fmt.Println("unexpected error", err)
+		os.Exit(1)
+	}
+	return s
 }
 
 func (r Record) String() string {
@@ -117,11 +128,11 @@ func (r Record) String() string {
 func execDns(c *Config, method, qname string, rtype ResourceType, value string) (bool, error) {
 
 	if !regexQname.MatchString(qname) {
-		return false, errInvQname
+		return false, ErrInvQname
 	}
 
-	if rtype == NONE {
-		return false, errRtypeNotSet
+	if !rtype.IsValid() {
+		return false, ErrRtypeNotSet
 	}
 
 	client := &http.Client{Timeout: time.Second * 30}
@@ -136,15 +147,23 @@ func execDns(c *Config, method, qname string, rtype ResourceType, value string) 
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != 200 {
-		return false, errors.New(fmt.Sprintf("response error: %s (%d)", res.Status, res.StatusCode))
-	}
 	bodyBytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return false, err
 	}
+	bodyString := string(bodyBytes)
 
-	return strings.HasPrefix(string(bodyBytes), "updated DNS:"), nil
+	if res.StatusCode != 200 {
+		if len(bodyString) > 0 {
+			return false, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+		} else {
+			return false, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+		}
+	}
+	if strings.HasPrefix(bodyString, "updated DNS:") {
+		return true, nil
+	}
+	return false, errors.New(fmt.Sprintf("unexpected respone body: %s", bodyString))
 }
 
 // GetDns returns matching custom DNS records. The optional qname and rtype parameters
@@ -153,7 +172,7 @@ func execDns(c *Config, method, qname string, rtype ResourceType, value string) 
 func GetDns(c *Config, qname string, rtype ResourceType) (Records, error) {
 
 	if qname != "" && !regexQname.MatchString(qname) {
-		return nil, errInvQname
+		return nil, ErrInvQname
 	}
 
 	client := &http.Client{Timeout: time.Second * 30}
@@ -169,7 +188,16 @@ func GetDns(c *Config, qname string, rtype ResourceType) (Records, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("response error: %s (%d)", res.Status, res.StatusCode))
+		bodyBytes, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		bodyString := string(bodyBytes)
+		if len(bodyString) > 0 {
+			return nil, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+		} else {
+			return nil, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+		}
 	}
 
 	var result Records
@@ -211,11 +239,11 @@ func DeleteDns(c *Config, qname string, rtype ResourceType, value string) (bool,
 func SetOrAddAddressRecord(c *Config, network NetworkType, qname, value string, add bool) (bool, error) {
 
 	if !regexQname.MatchString(qname) {
-		return false, errInvQname
+		return false, ErrInvQname
 	}
 
 	if network != TCP4 && network != TCP6 {
-		return false, errInvNet
+		return false, ErrInvNet
 	}
 
 	dialer := &net.Dialer{
@@ -239,7 +267,6 @@ func SetOrAddAddressRecord(c *Config, network NetworkType, qname, value string, 
 		method = http.MethodPost
 	}
 	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", c.url(), dnsPath(qname, rtype)), strings.NewReader(value))
-
 	if err != nil {
 		return false, err
 	}
@@ -251,15 +278,23 @@ func SetOrAddAddressRecord(c *Config, network NetworkType, qname, value string, 
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != 200 {
-		return false, errors.New(fmt.Sprintf("response error: %s (%d)", res.Status, res.StatusCode))
-	}
 	bodyBytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return false, err
 	}
+	bodyString := string(bodyBytes)
 
-	return strings.HasPrefix(string(bodyBytes), "updated DNS:"), nil
+	if res.StatusCode != 200 {
+		if len(bodyString) > 0 {
+			return false, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+		} else {
+			return false, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+		}
+	}
+	if strings.HasPrefix(bodyString, "updated DNS:") {
+		return true, nil
+	}
+	return false, errors.New(fmt.Sprintf("unexpected respone body: %s", bodyString))
 }
 
 // Updates a custom A record of the qname. If the value is empty, the server will take the

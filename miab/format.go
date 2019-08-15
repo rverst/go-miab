@@ -2,6 +2,7 @@ package miab
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -11,6 +12,12 @@ import (
 type Formats string
 
 const (
+	CsvDnsHead   = `"domain name", "record type", "value"`
+	CsvUserHead  = `"domain", "email", "privileges", "status", "mailbox"`
+	CsvAliasHead = `"domain", address", "displayAddress", "forwardsTo", "permittedSenders", "required"`
+)
+
+const (
 	JSON  = Formats(`json`)
 	YAML  = Formats(`yaml`)
 	CSV   = Formats(`csv`)
@@ -18,75 +25,84 @@ const (
 )
 
 func print(i interface{}, format Formats) {
+	var s string
+	var err error
+
 	switch format {
 	case JSON:
-		fmt.Print(marshallJson(i))
+		s, err = marshallJson(i)
 	case YAML:
-		fmt.Print(marshallYaml(i))
+		s, err = marshallYaml(i)
 	case CSV:
-		fmt.Print(marshallCsv(i))
+		s, err = marshallCsv(i)
 	default:
-		fmt.Print(toString(i, PLAIN))
+		s, err = toString(i, PLAIN)
 	}
+
+	if err != nil {
+		fmt.Print("unexpected error", err)
+		os.Exit(1)
+	}
+	fmt.Print(s)
 }
 
-func toString(i interface{}, format Formats) string {
+func toString(i interface{}, format Formats) (string, error) {
 	switch format {
 	case JSON:
 		return marshallJson(i)
 	case YAML:
 		return marshallYaml(i)
 	case CSV:
-		return ""
+		return marshallCsv(i)
 	default:
 		switch i.(type) {
 		case AliasDomains:
-			return i.(AliasDomains).String()
+			return i.(AliasDomains).String(), nil
 		case AliasDomain:
-			return i.(AliasDomain).String()
+			return i.(AliasDomain).String(), nil
 		case Records:
-			return i.(Records).String()
+			return i.(Records).String(), nil
 		case Record:
-			return i.(Record).String()
+			return i.(Record).String(), nil
 		case MailDomains:
-			return i.(MailDomains).String()
+			return i.(MailDomains).String(), nil
 		case MailDomain:
-			return i.(MailDomain).String()
+			return i.(MailDomain).String(), nil
+		default:
+			return fmt.Sprint(i), nil
 		}
 	}
-	return ""
 }
 
-func marshallJson(i interface{}) string {
+func marshallJson(i interface{}) (string, error) {
 	r, err := json.Marshal(i)
 	if err != nil {
-		fmt.Printf("Error marshalling json: %v\n", err)
-		os.Exit(1)
+		return "", err
 	}
-
-	return string(r)
+	return string(r), nil
 }
 
-func marshallYaml(i interface{}) string {
+func marshallYaml(i interface{}) (string, error) {
 	r, err := yaml.Marshal(i)
 	if err != nil {
 		fmt.Printf("Error marshalling yaml: %v\n", err)
 		os.Exit(1)
 	}
-
-	return string(r)
+	return string(r), nil
 }
 
-func marshallCsv(i interface{}) string {
+func marshallCsv(i interface{}) (string, error) {
 
 	r := strings.Builder{}
 	switch i.(type) {
 	case AliasDomains, AliasDomain:
-		r.WriteString(`"domain", address", "displayAddress", "forwardsTo", "permittedSenders", "required"`)
+		r.WriteString(CsvAliasHead)
 	case MailDomains, MailDomain:
-		r.WriteString(`"domain", "email", "privileges", "status", "mailbox"`)
+		r.WriteString(CsvUserHead)
+	case Records, Record:
+		r.WriteString(CsvDnsHead)
 	default:
-		return ""
+		return "", errors.New(fmt.Sprintf("unsupported type"))
 	}
 
 	r.WriteByte('\n')
@@ -104,9 +120,14 @@ func marshallCsv(i interface{}) string {
 		}
 	case MailDomain:
 		csvMailDomain(i.(MailDomain), &r)
+	case Records:
+		for _, x := range i.(Records) {
+			csvRecord(x, &r)
+		}
+	case Record:
+		csvRecord(i.(Record), &r)
 	}
-
-	return r.String()
+	return r.String(), nil
 }
 
 func csvAliasDomain(a AliasDomain, r *strings.Builder) {
@@ -134,4 +155,10 @@ func csvMailDomain(m MailDomain, r *strings.Builder) {
 		r.WriteString(fmt.Sprintf(`"%s", "%s", "%s", "%s", "%s"`, m.Domain, u.Email, p, u.Status, u.Mailbox))
 		r.WriteByte('\n')
 	}
+}
+
+func csvRecord(x Record, r *strings.Builder) {
+
+	r.WriteString(fmt.Sprintf(`"%s", "%s", "%s"`, x.QName, x.RType, x.Value))
+	r.WriteByte('\n')
 }

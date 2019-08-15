@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -20,7 +22,12 @@ func (a AliasDomains) Print(format Formats) {
 }
 
 func (a AliasDomains) ToString(format Formats) string {
-	return toString(a, format)
+	s, err := toString(a, format)
+	if err != nil {
+		fmt.Println("unexpected error", err)
+		os.Exit(1)
+	}
+	return s
 }
 
 func (a AliasDomains) String() string {
@@ -61,7 +68,12 @@ func (a AliasDomain) Print(format Formats) {
 }
 
 func (a AliasDomain) ToString(format Formats) string {
-	return toString(a, format)
+	s, err := toString(a, format)
+	if err != nil {
+		fmt.Println("unexpected error", err)
+		os.Exit(1)
+	}
+	return s
 }
 
 type Alias struct {
@@ -88,7 +100,16 @@ func exeAlias(c *Config, path, body string) error {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return errors.New(fmt.Sprintf("response error: %s (%d)", res.Status, res.StatusCode))
+		bodyBytes, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return err
+		}
+		bodyString := string(bodyBytes)
+		if len(bodyString) > 0 {
+			return errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+		} else {
+			return errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+		}
 	}
 	return nil
 }
@@ -109,7 +130,16 @@ func GetAliases(c *Config) (AliasDomains, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("response error: %s (%d)", res.Status, res.StatusCode))
+		bodyBytes, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		bodyString := string(bodyBytes)
+		if len(bodyString) > 0 {
+			return nil, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+		} else {
+			return nil, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+		}
 	}
 
 	var result AliasDomains
