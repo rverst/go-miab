@@ -89,7 +89,7 @@ TestRecord_String(t *testing.T) {
 	got := testRec1.String()
 
 	if got != want {
-		t.Errorf("wrong format, want: want:\n%s\n\ngot:\n%s", want, got)
+		t.Errorf("wrong format, want: \n***%s***\ngot:\n***%s***", want, got)
 	}
 }
 
@@ -107,10 +107,10 @@ TestRecord_ToString(t *testing.T) {
 		t.Error("Unable to unmarshal generated yaml", err)
 	}
 
-	expectedCsv := fmt.Sprintf("%s\n\"example.org\", \"A\", \"127.0.0.1\"\n", CsvDnsHead)
+	want := fmt.Sprintf("%s\n\"example.org\", \"A\", \"127.0.0.1\"\n", CsvDnsHead)
 	c := testRec1.ToString(CSV)
-	if c != expectedCsv {
-		t.Errorf("wrong format, expected: \n%s\n\ngot:\n%s", expectedCsv, c)
+	if c != want {
+		t.Errorf("wrong format, want: \n%s\n\ngot:\n%s", want, c)
 	}
 }
 
@@ -129,11 +129,11 @@ TestRecords_Print(t *testing.T) {
 func
 TestRecords_String(t *testing.T) {
 
-	expected := "example.org	A	127.0.0.1\nexample.org	AAAA	::1\n"
+	want := "example.org	A	127.0.0.1\nexample.org	AAAA	::1"
 	s := testRecs.String()
 
-	if s != expected {
-		t.Errorf("wrong format, expected: expected:\n%s\n\ngot:\n%s", expected, s)
+	if s != want {
+		t.Errorf("wrong format, want:\n***%s***\ngot:\n***%s***", want, s)
 	}
 }
 

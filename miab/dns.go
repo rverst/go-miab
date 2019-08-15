@@ -95,9 +95,11 @@ func (r Records) ToString(format Formats) string {
 
 func (r Records) String() string {
 	res := strings.Builder{}
-	for _, x := range r {
+	for i, x := range r {
 		res.WriteString(x.String())
-		res.WriteString("\n")
+		if i < len(r) - 1 {
+			res.WriteByte('\n')
+		}
 	}
 	return res.String()
 }
