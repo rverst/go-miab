@@ -39,7 +39,7 @@ var dnsGetCmd = &cobra.Command{
 			to filter exactly one record, in this case the the domain-flag will be ignored. 
 			NOTE: If you use the qname-flag, the rtype-flag defaults to 'A'.`,
 	Args: cobra.NoArgs,
-	Run: getDns,
+	Run:  getDns,
 }
 
 var dnsSetCmd = &cobra.Command{
@@ -49,7 +49,7 @@ var dnsSetCmd = &cobra.Command{
 Use 'set' (instead of 'add') when you only have one value for a 'qname' and 'rtype',
 such as typical A records (without round-robin).`,
 	Args: cobra.NoArgs,
-	Run: setDns,
+	Run:  setDns,
 }
 
 var dnsAddCmd = &cobra.Command{
@@ -58,7 +58,7 @@ var dnsAddCmd = &cobra.Command{
 	Long: `Adds a new custom DNS record. Use 'add' when you have multiple TXT records or round-robin A records.
 ('set' would delete previously added records.)`,
 	Args: cobra.NoArgs,
-	Run: addDns,
+	Run:  addDns,
 }
 
 var dnsDeleteCmd = &cobra.Command{
@@ -67,56 +67,55 @@ var dnsDeleteCmd = &cobra.Command{
 	Long: `Deletes custom DNS records. If the value-flag is omitted, it deletes all records matching the
 qname-flag and rtype-flag.`,
 	Args: cobra.NoArgs,
-	Run: delDns,
+	Run:  delDns,
 }
-
 
 func getDns(cmd *cobra.Command, args []string) {
 
-		format := miab.PLAIN
-		if f, err := cmd.Flags().GetString("format"); err == nil {
-			format = miab.Formats(f)
-		}
+	format := miab.PLAIN
+	if f, err := cmd.Flags().GetString("format"); err == nil {
+		format = miab.Format(f)
+	}
 
-		rtype := miab.NONE
-		if r, err := cmd.Flags().GetString("rtype"); err == nil {
-			rtype = miab.ResourceType(r)
-		}
-		qname, _ := cmd.Flags().GetString("qname")
+	rtype := miab.NONE
+	if r, err := cmd.Flags().GetString("rtype"); err == nil {
+		rtype = miab.ResourceType(r)
+	}
+	qname, _ := cmd.Flags().GetString("qname")
 
-		records, err := miab.GetDns(&config, qname, rtype)
-		if err != nil {
-			fmt.Printf("Error fetching dns records: %v\n", err)
-			os.Exit(1)
-		}
+	records, err := miab.GetDns(&config, qname, rtype)
+	if err != nil {
+		fmt.Printf("Error fetching dns records: %v\n", err)
+		os.Exit(1)
+	}
 
-		if qname == "" {
-			d, err := cmd.Flags().GetString("domain")
-			if err == nil && d != "" {
-				filtered := miab.Records{}
-				for _, record := range records {
-					if strings.Contains(record.QName, d) {
+	if qname == "" {
+		d, err := cmd.Flags().GetString("domain")
+		if err == nil && d != "" {
+			filtered := miab.Records{}
+			for _, record := range records {
+				if strings.Contains(record.QName, d) {
 
-						if rtype != miab.NONE {
-							if rtype == record.RType {
-								filtered = append(filtered, record)
-							}
-						} else {
+					if rtype != miab.NONE {
+						if rtype == record.RType {
 							filtered = append(filtered, record)
 						}
+					} else {
+						filtered = append(filtered, record)
 					}
 				}
-				fmt.Println(filtered.ToString(format))
-				return
 			}
-		}
-
-		if qname != "" && len(records) == 1 {
-			fmt.Print(records[0].Value)
+			fmt.Println(filtered.ToString(format))
 			return
 		}
+	}
 
-		fmt.Println(records.ToString(format))
+	if qname != "" && len(records) == 1 {
+		fmt.Print(records[0].Value)
+		return
+	}
+
+	fmt.Println(records.ToString(format))
 }
 
 func setDns(cmd *cobra.Command, args []string) {

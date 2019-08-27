@@ -81,11 +81,11 @@ func TestMailDomain_ToString(t *testing.T) {
 	}
 
 	want := strings.Builder{}
-	want.WriteString(CsvUserHead)
+	want.WriteString(csvUserHead)
 	want.WriteByte('\n')
-	want.WriteString(`"example.org", "admin@example.org", "admin", "active", ""`)
+	want.WriteString(`"example.org", "admin@example.org", "admin", "Active", ""`)
 	want.WriteByte('\n')
-	want.WriteString(`"example.org", "user1@example.org", "", "active", ""`)
+	want.WriteString(`"example.org", "user1@example.org", "", "Active", ""`)
 	want.WriteByte('\n')
 	want.WriteString(`"example.org", "user2@example.org", "", "inactive", "/home/miab/mail/example.org/user2"`)
 	want.WriteByte('\n')
@@ -133,15 +133,15 @@ func TestMailDomains_ToString(t *testing.T) {
 	}
 
 	want := strings.Builder{}
-	want.WriteString(CsvUserHead)
+	want.WriteString(csvUserHead)
 	want.WriteByte('\n')
-	want.WriteString(`"example.org", "admin@example.org", "admin", "active", ""`)
+	want.WriteString(`"example.org", "admin@example.org", "admin", "Active", ""`)
 	want.WriteByte('\n')
-	want.WriteString(`"example.org", "user1@example.org", "", "active", ""`)
+	want.WriteString(`"example.org", "user1@example.org", "", "Active", ""`)
 	want.WriteByte('\n')
 	want.WriteString(`"example.org", "user2@example.org", "", "inactive", "/home/miab/mail/example.org/user2"`)
 	want.WriteByte('\n')
-	want.WriteString(`"example.com", "admin@example.com", "admin", "active", ""`)
+	want.WriteString(`"example.com", "admin@example.com", "admin", "Active", ""`)
 	want.WriteByte('\n')
 
 	got := testMailDomains.ToString(CSV)
@@ -230,7 +230,7 @@ func TestRemoveUser(t *testing.T) {
 			ts := getDnsTestServer(t, http.MethodPost, tc.serverStatus, "", NONE, false, fmt.Sprintf("email=%s", tc.email))
 			defer ts.Close()
 			c, _ := NewConfig("test", "secret", ts.URL)
-			err := RemoveUser(c, tc.email)
+			err := DeleteUser(c, tc.email)
 
 			if tc.wantError && err == nil {
 				t.Errorf("failed, want error, got: nil")

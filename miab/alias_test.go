@@ -80,7 +80,7 @@ func TestAliasDomain_ToString(t *testing.T) {
 	}
 
 	want := strings.Builder{}
-	want.WriteString(CsvAliasHead)
+	want.WriteString(csvAliasHead)
 	want.WriteByte('\n')
 	want.WriteString(`"example.org", "test@example.org", "test@example.org", "mail@example.org;info@example.org", "", false`)
 	want.WriteByte('\n')
@@ -133,7 +133,7 @@ func TestAliasDomains_ToString(t *testing.T) {
 	}
 
 	want := strings.Builder{}
-	want.WriteString(CsvAliasHead)
+	want.WriteString(csvAliasHead)
 	want.WriteByte('\n')
 	want.WriteString(`"example.org", "test@example.org", "test@example.org", "mail@example.org;info@example.org", "", false`)
 	want.WriteByte('\n')
@@ -219,7 +219,7 @@ func TestRemoveAlias(t *testing.T) {
 		serverStatus int
 		wantError    bool
 	}{
-		{"user@example.org",  200, false},
+		{"user@example.org", 200, false},
 		{"user@example.org", 503, true},
 	}
 
@@ -228,7 +228,7 @@ func TestRemoveAlias(t *testing.T) {
 			ts := getDnsTestServer(t, http.MethodPost, tc.serverStatus, "", NONE, false, fmt.Sprintf("address=%s", tc.email))
 			defer ts.Close()
 			c, _ := NewConfig("test", "secret", ts.URL)
-			err := RemoveAlias(c, tc.email)
+			err := DeleteAlias(c, tc.email)
 
 			if tc.wantError && err == nil {
 				t.Errorf("failed, want error, got: nil")

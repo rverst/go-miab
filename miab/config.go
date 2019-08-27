@@ -8,20 +8,21 @@ import (
 )
 
 var (
-	regexUrl   = *regexp.MustCompile(`^(?P<schema>https?)://(?P<domain>.+)$`)
-	errNoUser      = errors.New("'user' not specified")
-	errNoPass      = errors.New("'password' not specified")
-	errInvUrl      = errors.New("'dnsUrl' is not valid")
+	regexUrl  = *regexp.MustCompile(`^(?P<schema>https?)://(?P<domain>.+)$`)
+	errNoUser = errors.New("'user' not specified")
+	errNoPass = errors.New("'password' not specified")
+	errInvUrl = errors.New("'dnsUrl' is not valid")
 )
 
-type Config struct{
+// Config holds the details to communicate with the Mail-in-a-Box API.
+type Config struct {
 	user     string
 	password string
 	scheme   string
 	domain   string
 }
 
-// NewConfig creates a new configuration to access the Mail-in-a-Box API
+// NewConfig creates a new configuration to access the Mail-in-a-Box API.
 func NewConfig(user, password, url string) (*Config, error) {
 	if user == "" {
 		return nil, errNoUser

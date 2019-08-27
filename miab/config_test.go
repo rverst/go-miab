@@ -34,8 +34,8 @@ func TestNewConfig(t *testing.T) {
 		{"https://sub.sub.example.org/", "https", "sub.sub.example.org"},
 	}
 
-	testCasesUrlFail := [] struct {
-		url        string
+	testCasesUrlFail := []struct {
+		url       string
 		wantError error
 	}{
 		{"ftp://example.org", errInvUrl},
@@ -114,8 +114,7 @@ func TestNewConfig(t *testing.T) {
 	}
 }
 
-func
-TestNewConfigNoUser(t *testing.T) {
+func TestNewConfigNoUser(t *testing.T) {
 	dns, err := NewConfig("", "", "")
 
 	if err == nil {
@@ -127,8 +126,7 @@ TestNewConfigNoUser(t *testing.T) {
 	}
 }
 
-func
-TestNewConfigNoPass(t *testing.T) {
+func TestNewConfigNoPass(t *testing.T) {
 	dns, err := NewConfig("", "", "")
 
 	if err == nil {
@@ -140,8 +138,7 @@ TestNewConfigNoPass(t *testing.T) {
 	}
 }
 
-func
-TestNewConfigNoUrl(t *testing.T) {
+func TestNewConfigNoUrl(t *testing.T) {
 	dns, err := NewConfig("", "", "")
 
 	if err == nil {
@@ -153,8 +150,7 @@ TestNewConfigNoUrl(t *testing.T) {
 	}
 }
 
-func
-TestConfig_url(t *testing.T) {
+func TestConfig_url(t *testing.T) {
 	testCases := []struct {
 		cfg  Config
 		want string

@@ -93,7 +93,7 @@ func TestRecord_ToString(t *testing.T) {
 		t.Error("Unable to unmarshal generated yaml", err)
 	}
 
-	want := fmt.Sprintf("%s\n\"example.org\", \"A\", \"127.0.0.1\"\n", CsvDnsHead)
+	want := fmt.Sprintf("%s\n\"example.org\", \"A\", \"127.0.0.1\"\n", csvDnsHead)
 	c := testRec1.ToString(CSV)
 	if c != want {
 		t.Errorf("wrong format, want: \n%s\n\ngot:\n%s", want, c)
@@ -127,7 +127,7 @@ func TestRecords_ToString(t *testing.T) {
 		t.Error("Unable to unmarshal generated json", err)
 	}
 
-	expectedCsv := fmt.Sprintf("%s\n\"example.org\", \"A\", \"127.0.0.1\"\n\"example.org\", \"AAAA\", \"::1\"\n", CsvDnsHead)
+	expectedCsv := fmt.Sprintf("%s\n\"example.org\", \"A\", \"127.0.0.1\"\n\"example.org\", \"AAAA\", \"::1\"\n", csvDnsHead)
 	c := testRecs.ToString(CSV)
 	if c != expectedCsv {
 		t.Errorf("wrong format, expected: \n%s\n\ngot:\n%s", expectedCsv, c)
@@ -227,12 +227,12 @@ func TestGetDns(t *testing.T) {
 [{"qname": "test.example.org","rtype": "A","value": "127.0.0.1"},
 {"qname": "*.example.org","rtype": "A","value": "127.0.0.2"}]`,
 			Records{
-				Record{QName: "test.example.org", RType: A, Value: "127.0.0.1",},
-				Record{QName: "*.example.org", RType: A, Value: "127.0.0.2",},
+				Record{QName: "test.example.org", RType: A, Value: "127.0.0.1"},
+				Record{QName: "*.example.org", RType: A, Value: "127.0.0.2"},
 			}, false},
 		{"GetDns invalid qname", "fooBar", 404, "", nil, true},
-		{"GetDns invalid server status", "test.example.org", 503, "", nil, true},
-		{"GetDns invalid server status", "test.example.org", 503, "No Gateway", nil, true},
+		{"GetDns invalid server Status", "test.example.org", 503, "", nil, true},
+		{"GetDns invalid server Status", "test.example.org", 503, "No Gateway", nil, true},
 		{"GetDns invalid response", "", 200, `
 "test.example.org", "A", "127.0.0.1",
 "*.example.org", "A", "127.0.0.2"
@@ -308,8 +308,8 @@ func testSetAddDel(t *testing.T, name, httpMethod string) {
 		{fmt.Sprintf("%s invalid rtype NONE", name), "test.example.org", "127.0.0.1", NONE, 200, "", false, true},
 		{fmt.Sprintf("%s invalid rtype B", name), "test.example.org", "127.0.0.1", NONE, 200, "", false, true},
 		{fmt.Sprintf("%s invalid qname", name), "test%example_org", "127.0.0.1", A, 200, "", false, true},
-		{fmt.Sprintf("%s invalid server status", name), "test.example.org", "127.0.0.1", A, 503, "", false, true},
-		{fmt.Sprintf("%s invalid server status", name), "test.example.org", "127.0.0.1", A, 503, "No Gateway", false, true},
+		{fmt.Sprintf("%s invalid server Status", name), "test.example.org", "127.0.0.1", A, 503, "", false, true},
+		{fmt.Sprintf("%s invalid server Status", name), "test.example.org", "127.0.0.1", A, 503, "No Gateway", false, true},
 	}
 
 	for _, tc := range testCases {

@@ -9,20 +9,20 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 }
 
-const versionTemplate  = "Mail-in-a-Box API command-line interface v%s"
+const versionTemplate = "Mail-in-a-Box API command-line interface v%s"
 
 var versionCmd = &cobra.Command{
 
 	Use:   "version",
 	Short: "Print the version number of go-miab",
 	Long:  `All software has versions. This is go-miab's`,
-	Run: Version,
+	Run:   Version,
 }
 
 func Version(cmd *cobra.Command, args []string) {
 	fmt.Print(version(rootCmd.Version))
 }
 
-func version(version string) string{
+func version(version string) string {
 	return fmt.Sprintf(versionTemplate, version)
 }

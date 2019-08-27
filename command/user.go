@@ -68,7 +68,7 @@ var userDeletePrivilege = &cobra.Command{
 func getUser(cmd *cobra.Command, args []string) {
 	format := miab.PLAIN
 	if f, err := cmd.Flags().GetString("format"); err == nil {
-		format = miab.Formats(f)
+		format = miab.Format(f)
 	}
 
 	users, err := miab.GetUsers(&config)
@@ -103,7 +103,7 @@ func addUser(cmd *cobra.Command, args []string) {
 func delUser(cmd *cobra.Command, args []string) {
 	email, _ := cmd.Flags().GetString("email")
 
-	if err := miab.RemoveUser(&config, email); err != nil {
+	if err := miab.DeleteUser(&config, email); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

@@ -50,7 +50,7 @@ var aliasDeleteCmd = &cobra.Command{
 func getAlias(cmd *cobra.Command, args []string) {
 	format := miab.PLAIN
 	if f, err := cmd.Flags().GetString("format"); err == nil {
-		format = miab.Formats(f)
+		format = miab.Format(f)
 	}
 	domain, _ := cmd.Flags().GetString("domain")
 
@@ -83,7 +83,7 @@ func addAlias(cmd *cobra.Command, args []string) {
 func delAlias(cmd *cobra.Command, args []string) {
 	email, _ := cmd.Flags().GetString("address")
 
-	if err := miab.RemoveAlias(&config, email); err != nil {
+	if err := miab.DeleteAlias(&config, email); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

@@ -14,39 +14,42 @@ import (
 	"time"
 )
 
+// ResourceType defines a dns resource type (e.g. 'A', 'AAAA', TXT...)
 type ResourceType string
+
+// NetworkType defines a valid network type ('tcp4' or 'tcp6')
 type NetworkType string
 
 var (
 	regexQname     = *regexp.MustCompile(`^\*?\.?(?:[a-zA-Z0-9-]{2,63}\.?)+\.([a-zA-Z]{2,})$`)
-	ErrInvQname    = errors.New("'qname' seems to be invalid")
-	ErrInvNet      = errors.New("'network' has to be `tcp4` or `tcp6`")
-	ErrRtypeNotSet = errors.New("'rtype' has to be set")
+	errInvQname    = errors.New("'qname' seems to be invalid")
+	errInvNet      = errors.New("'network' has to be `tcp4` or `tcp6`")
+	errRtypeNotSet = errors.New("'rtype' has to be set")
 )
 
 const (
-	NONE  = ResourceType(``)
-	A     = ResourceType(`A`)
-	AAAA  = ResourceType(`AAAA`)
-	TXT   = ResourceType(`TXT`)
-	CNAME = ResourceType(`CNAME`)
-	MX    = ResourceType(`MX`)
-	SRV   = ResourceType(`SRV`)
-	SSHFP = ResourceType(`SSHFP`)
-	CAA   = ResourceType(`CAA`)
-	NS    = ResourceType(`NS`)
+	NONE  = ResourceType(``)      // NONE means no resource type specified
+	A     = ResourceType(`A`)     // A - IPv4 address record (RFC 1035)
+	AAAA  = ResourceType(`AAAA`)  // AAAA - IPv4 address record (RFC 3596)
+	CAA   = ResourceType(`CAA`)   // CAA - certification authority authorization (RFC 6844)
+	CNAME = ResourceType(`CNAME`) // CNAME - canonical name record (RFC 1035)
+	MX    = ResourceType(`MX`)    // MX - mail exchange record (RFC 1035 and RFC 7505)
+	NS    = ResourceType(`NS`)    // NS - name server record (RFC 1035)
+	SRV   = ResourceType(`SRV`)   // SRV - service locator (RFC 2782)
+	SSHFP = ResourceType(`SSHFP`) // SSHFP - SSH public key fingerprint (RFC 4255)
+	TXT   = ResourceType(`TXT`)   // TXT - text record (RFC 1035)
 )
 
-const  (
-	TCP4 = NetworkType(`tcp4`)
-	TCP6 = NetworkType(`tcp6`)
+const (
+	TCP4 = NetworkType(`tcp4`) // TCP4 - transport via TCP/IPv4
+	TCP6 = NetworkType(`tcp6`) // TCP6 - transport via TCP/IPv6
 )
 
-var AllResourceTypes = []ResourceType{A, AAAA, TXT, CNAME, MX, SRV, SSHFP, CAA, NS}
+var allResourceTypes = []ResourceType{A, AAAA, TXT, CNAME, MX, SRV, SSHFP, CAA, NS}
 
 func (r *ResourceType) IsValid() bool {
 
-	for _, t := range AllResourceTypes {
+	for _, t := range allResourceTypes {
 		if (*r) == t {
 			return true
 		}
@@ -78,9 +81,11 @@ func dnsPath(qname string, rtype ResourceType) string {
 	return fmt.Sprintf("%s/%s/%s", path, qname, rtype)
 }
 
+// Records defines an array of Record
 type Records []Record
 
-func (r Records) ToString(format Formats) string {
+// ToString returns a string of the Records in the provided Format
+func (r Records) ToString(format Format) string {
 	s, err := toString(r, format)
 	if err != nil {
 		fmt.Println("unexpected error", err)
@@ -89,24 +94,27 @@ func (r Records) ToString(format Formats) string {
 	return s
 }
 
+// String returns a string representation of the Records
 func (r Records) String() string {
 	res := strings.Builder{}
 	for i, x := range r {
 		res.WriteString(x.String())
-		if i < len(r) - 1 {
+		if i < len(r)-1 {
 			res.WriteByte('\n')
 		}
 	}
 	return res.String()
 }
 
+// Record defines a dns record
 type Record struct {
-	QName string       `json:"qname"`
-	RType ResourceType `json:"rtype"`
-	Value string       `json:"value"`
+	QName string       `json:"qname"` // QName holds the fully qualified domain name of the record
+	RType ResourceType `json:"rtype"` // RType holds the ResourceType of the record
+	Value string       `json:"value"` // Value holds the value of the record
 }
 
-func (r Record) ToString(format Formats) string {
+// ToString returns a string of the Record in the provided Format
+func (r Record) ToString(format Format) string {
 	s, err := toString(r, format)
 	if err != nil {
 		fmt.Println("unexpected error", err)
@@ -115,6 +123,7 @@ func (r Record) ToString(format Formats) string {
 	return s
 }
 
+// String returns a string representation of the Record
 func (r Record) String() string {
 	return fmt.Sprintf("%s\t%s\t%s", r.QName, r.RType, r.Value)
 }
@@ -122,11 +131,11 @@ func (r Record) String() string {
 func execDns(c *Config, method, qname string, rtype ResourceType, value string) (bool, error) {
 
 	if !regexQname.MatchString(qname) {
-		return false, ErrInvQname
+		return false, errInvQname
 	}
 
 	if !rtype.IsValid() {
-		return false, ErrRtypeNotSet
+		return false, errRtypeNotSet
 	}
 
 	client := &http.Client{Timeout: time.Second * 30}
@@ -150,14 +159,13 @@ func execDns(c *Config, method, qname string, rtype ResourceType, value string) 
 	if res.StatusCode != 200 {
 		if len(bodyString) > 0 {
 			return false, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
-		} else {
-			return false, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
 		}
+		return false, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
 	}
 	if strings.HasPrefix(bodyString, "updated DNS:") {
 		return true, nil
 	}
-	return false, errors.New(fmt.Sprintf("unexpected respone body: %s", bodyString))
+	return false, errors.New(fmt.Sprintf("unexpected response body: %s", bodyString))
 }
 
 // GetDns returns matching custom DNS records. The optional qname and rtype parameters
@@ -166,7 +174,7 @@ func execDns(c *Config, method, qname string, rtype ResourceType, value string) 
 func GetDns(c *Config, qname string, rtype ResourceType) (Records, error) {
 
 	if qname != "" && !regexQname.MatchString(qname) {
-		return nil, ErrInvQname
+		return nil, errInvQname
 	}
 
 	client := &http.Client{Timeout: time.Second * 30}
@@ -188,9 +196,9 @@ func GetDns(c *Config, qname string, rtype ResourceType) (Records, error) {
 		}
 		bodyString := string(bodyBytes)
 		if len(bodyString) > 0 {
-			return nil, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+			return nil, fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
 		} else {
-			return nil, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+			return nil, fmt.Errorf("response error (%d)", res.StatusCode)
 		}
 	}
 
@@ -201,7 +209,7 @@ func GetDns(c *Config, qname string, rtype ResourceType) (Records, error) {
 	return result, nil
 }
 
-// Sets a custom DNS record replacing any existing records with the same qname and rtype.
+// SetDns sets a custom DNS record replacing any existing records with the same qname and rtype.
 // Use SetDns (instead of AddDns) when you only have one value for a qname and rtype,
 // such as typical A records (without round-robin).
 // Returns true if the DNS was updated
@@ -210,14 +218,14 @@ func SetDns(c *Config, qname string, rtype ResourceType, value string) (bool, er
 	return execDns(c, http.MethodPut, qname, rtype, value)
 }
 
-// Adds a new custom DNS recorc. Use AddDns when you have multiple TXT records or round-robin A records.
+// AddDns adds a new custom DNS record. Use AddDns when you have multiple TXT records or round-robin A records.
 // Returns true if the DNS was updated
 func AddDns(c *Config, qname string, rtype ResourceType, value string) (bool, error) {
 
 	return execDns(c, http.MethodPost, qname, rtype, value)
 }
 
-// Deletes custom DNS records. If the value empty, deletes all records matching the qname and rtype.
+// DeleteDns removes custom DNS records. If the value empty, deletes all records matching the qname and rtype.
 // If the value is present, deletes only the record matching the qname, rtype and value.
 // Returns true if the DNS was updated
 func DeleteDns(c *Config, qname string, rtype ResourceType, value string) (bool, error) {
@@ -225,19 +233,19 @@ func DeleteDns(c *Config, qname string, rtype ResourceType, value string) (bool,
 	return execDns(c, http.MethodDelete, qname, rtype, value)
 }
 
-// Sets or Adds a custom A or AAAA record of the qname. If the value is empty, the server will take the
-// IPv4 or IPv6 address of the remote host as the value - quite handy for dynamic DNS!
+// SetOrAddAddressRecord sets or adds a custom A or AAAA record of the qname. If the value is empty, the server
+// will take the IPv4 or IPv6 address of the remote host as the value - quite handy for dynamic DNS!
 // You have to explicitly set network to `tcp4` or `tcp6` to set the correct record!
 // Consider using UpdateDns4 or UpdateDns6 for dynamic DNS!
 // Returns true if the DNS was set or updated.
 func SetOrAddAddressRecord(c *Config, network NetworkType, qname, value string, add bool) (bool, error) {
 
 	if !regexQname.MatchString(qname) {
-		return false, ErrInvQname
+		return false, errInvQname
 	}
 
 	if network != TCP4 && network != TCP6 {
-		return false, ErrInvNet
+		return false, errInvNet
 	}
 
 	dialer := &net.Dialer{
@@ -280,25 +288,25 @@ func SetOrAddAddressRecord(c *Config, network NetworkType, qname, value string, 
 
 	if res.StatusCode != 200 {
 		if len(bodyString) > 0 {
-			return false, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+			return false, fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
 		} else {
-			return false, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+			return false, fmt.Errorf("response error (%d)", res.StatusCode)
 		}
 	}
 	if strings.HasPrefix(bodyString, "updated DNS:") {
 		return true, nil
 	}
-	return false, errors.New(fmt.Sprintf("unexpected respone body: %s", bodyString))
+	return false, fmt.Errorf("unexpected response body: %s", bodyString)
 }
 
-// Updates a custom A record of the qname. If the value is empty, the server will take the
+// UpdateDns4 updates a custom A record for the provided qname. If the value is empty, the server will take the
 // IPv4 address of the remote host as the value - quite handy for dynamic DNS!
 // Returns true if the DNS was updated
 func UpdateDns4(c *Config, qname, value string) (bool, error) {
 	return SetOrAddAddressRecord(c, "tcp4", qname, value, false)
 }
 
-// Updates a custom AAAA record of the qname. If the value is empty, the server will take the
+// UpdateDns6 updates a custom AAAA record for the provided qname. If the value is empty, the server will take the
 // IPv6 address of the remote host as the value - quite handy for dynamic DNS!
 // Returns true if the DNS was updated
 func UpdateDns6(c *Config, qname, value string) (bool, error) {

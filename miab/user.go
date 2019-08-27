@@ -11,33 +11,35 @@ import (
 	"time"
 )
 
-type Privilege string
+// Status describes the status of an e-mail account.
 type Status string
 
 const (
-	Admin    = Privilege("admin")
-	Active   = Status("active")
-	Archived = Status("inactive")
+	Active   = Status("active")   // Active describes an active e-mail account.
+	Archived = Status("inactive") // Archived describes an archived (inactive) e-mail account.
 )
 
 const (
 	usersPath = `admin/mail/users`
 )
 
+// MailDomains defines an array of MailDomain.
 type MailDomains []MailDomain
 
+// String returns a string representation of the MailDomains.
 func (m MailDomains) String() string {
 	r := strings.Builder{}
 	for i, x := range m {
 		r.WriteString(x.String())
-		if i < len(m) - 1 {
+		if i < len(m)-1 {
 			r.WriteString("\n")
 		}
 	}
 	return r.String()
 }
 
-func (m MailDomains) ToString(format Formats) string {
+// ToString returns a string representation of the MailDomains in the provided Format.
+func (m MailDomains) ToString(format Format) string {
 	s, err := toString(m, format)
 	if err != nil {
 		fmt.Println("unexpected error", err)
@@ -46,20 +48,23 @@ func (m MailDomains) ToString(format Formats) string {
 	return s
 }
 
+// Users defines an array of User
 type Users []User
 
+// MailDomain defines a domain with its Users
 type MailDomain struct {
-	Domain string `json:"domain"`
-	Users  Users  `json:"users"`
+	Domain string `json:"domain"` // Domain is the domain name, e.g. example.org.
+	Users  Users  `json:"users"`  // Users is a list of User of the domain.
 }
 
 type User struct {
-	Email      string      `json:"email"`
-	Privileges interface{} `json:"privileges"` //due to a bug in miab < v0.42, we have to use an generic interface, because the datatype differs in archived users (string instead of array)
-	Status     Status      `json:"status"`
-	Mailbox    string      `json:"mailbox"`
+	Email      string      `json:"email"`      // Email is the e-mail address.
+	Privileges interface{} `json:"privileges"` // Privileges is a list of privileges, given to the user. Note: due to a bug in Mail-in-a-Box < v0.42, we have to use an generic interface, because the datatype differs in Archived users (string instead of array).
+	Status     Status      `json:"Status"`     // Status is the status of the account (Active or Archived).
+	Mailbox    string      `json:"mailbox"`    // Mailbox is the path to the mailbox on the server (only for archived accounts).
 }
 
+// String returns a string representation of the MailDomain.
 func (m MailDomain) String() string {
 
 	r := strings.Builder{}
@@ -77,7 +82,8 @@ func (m MailDomain) String() string {
 	return r.String()
 }
 
-func (m MailDomain) ToString(format Formats) string {
+// ToString returns a string representation of the MailDomain in the provided Format.
+func (m MailDomain) ToString(format Format) string {
 	s, err := toString(m, format)
 	if err != nil {
 		fmt.Println("unexpected error", err)
@@ -116,7 +122,7 @@ func execUser(c *Config, path, body string) error {
 	return nil
 }
 
-// GetUsers returns a list of existing mail users.
+// GetUsers returns a list of existing e-mail users.
 func GetUsers(c *Config) (MailDomains, error) {
 
 	client := &http.Client{Timeout: time.Second * 30}
@@ -151,30 +157,26 @@ func GetUsers(c *Config) (MailDomains, error) {
 	return result, nil
 }
 
-// Adds a new mail user. Note: Adding a mail user with an unknown domain adds this domain to the server.
+// AddUser adds a new e-mail user. Note: Adding an e-mail user with an unknown domain adds this domain also to the server.
 func AddUser(c *Config, email, password string) error {
-
 	body := fmt.Sprintf("email=%s&password=%s", email, password)
 	return execUser(c, "add", body)
 }
 
-// Removes a new mail user.
-func RemoveUser(c *Config, email string) error {
-
+// DeleteUser removes an existing e-mail user.
+func DeleteUser(c *Config, email string) error {
 	body := fmt.Sprintf("email=%s", email)
 	return execUser(c, "remove", body)
 }
 
-// Adds admin privileges to this user.
+// AddPrivileges adds admin privileges to this user.
 func AddPrivileges(c *Config, email string) error {
-
 	body := fmt.Sprintf("email=%s&privilege=admin", email)
 	return execUser(c, "privileges/add", body)
 }
 
-// Removes admin privileges to this user.
+// RemovePrivileges removes the admin privileges from this user.
 func RemovePrivileges(c *Config, email string) error {
-
 	body := fmt.Sprintf("email=%s&privilege=admin", email)
 	return execUser(c, "privileges/remove", body)
 }

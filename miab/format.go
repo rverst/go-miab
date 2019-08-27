@@ -9,22 +9,23 @@ import (
 	"strings"
 )
 
-type Formats string
+// Format defines an output format (e.g. `json`, `yaml`, ...)
+type Format string
 
 const (
-	CsvDnsHead   = `"domain name", "record type", "value"`
-	CsvUserHead  = `"domain", "email", "privileges", "status", "mailbox"`
-	CsvAliasHead = `"domain", address", "displayAddress", "forwardsTo", "permittedSenders", "required"`
+	csvDnsHead   = `"domain name", "record type", "value"`
+	csvUserHead  = `"domain", "email", "privileges", "Status", "mailbox"`
+	csvAliasHead = `"domain", address", "displayAddress", "forwardsTo", "permittedSenders", "required"`
 )
 
 const (
-	JSON  = Formats(`json`)
-	YAML  = Formats(`yaml`)
-	CSV   = Formats(`csv`)
-	PLAIN = Formats(`plain`)
+	JSON  = Format(`json`)  // JSON - output in json format
+	YAML  = Format(`yaml`)  // YAML - output in yaml format
+	CSV   = Format(`csv`)   // CSV - output in csv format, comma separated
+	PLAIN = Format(`plain`) // PLAIN - output as plain text
 )
 
-func toString(i interface{}, format Formats) (string, error) {
+func toString(i interface{}, format Format) (string, error) {
 	switch format {
 	case JSON:
 		return marshallJson(i)
@@ -74,11 +75,11 @@ func marshallCsv(i interface{}) (string, error) {
 	r := strings.Builder{}
 	switch i.(type) {
 	case AliasDomains, AliasDomain:
-		r.WriteString(CsvAliasHead)
+		r.WriteString(csvAliasHead)
 	case MailDomains, MailDomain:
-		r.WriteString(CsvUserHead)
+		r.WriteString(csvUserHead)
 	case Records, Record:
-		r.WriteString(CsvDnsHead)
+		r.WriteString(csvDnsHead)
 	default:
 		return "", errors.New(fmt.Sprintf("unsupported type"))
 	}
