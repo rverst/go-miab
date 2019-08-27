@@ -14,7 +14,7 @@ func init() {
 	aliasGetCmd.Flags().String("domain", "", "domain to filter the list of aliases")
 	aliasGetCmd.Flags().String("format", "plain", "the output format (plain, csv, json, yaml)")
 	aliasAddCmd.PersistentFlags().String("address", "", "alias address [mandatory]")
-	aliasAddCmd.Flags().String("forward", "", "email address(es) to forward to (comma separated) [mandatory]")
+	aliasAddCmd.Flags().String("forward", "", "e-mail address(es) to forward to (comma separated) [mandatory]")
 	aliasDeleteCmd.PersistentFlags().String("address", "", "alias address [mandatory]")
 
 	_ = aliasAddCmd.MarkPersistentFlagRequired("address")
@@ -25,24 +25,24 @@ func init() {
 
 var aliasGetCmd = &cobra.Command{
 	Use:   "alias",
-	Short: "Get existing mail aliases for users.",
-	Long:  `Get all mail aliases for the users of the server, use the domain-flag to filter the output.`,
+	Short: "Get existing a-mail aliases for users.",
+	Long:  `Get all a-mail aliases for the users of the server, use the domain-flag to filter the output.`,
 	Args:  cobra.NoArgs,
 	Run:   getAlias,
 }
 
 var aliasAddCmd = &cobra.Command{
 	Use:   "add",
-	Short: "Add an email alias",
-	Long:  `Add an email alias`,
+	Short: "Add an e-mail alias",
+	Long:  `Add an e-mail alias`,
 	Args:  cobra.NoArgs,
 	Run:   addAlias,
 }
 
 var aliasDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "Delete an email alias",
-	Long:  `Delete an email alias`,
+	Short: "Delete an e-mail alias",
+	Long:  `Delete an e-mail alias`,
 	Args:  cobra.NoArgs,
 	Run:   delAlias,
 }
@@ -56,7 +56,7 @@ func getAlias(cmd *cobra.Command, args []string) {
 
 	aliasDomains, err := miab.GetAliases(&config)
 	if err != nil {
-		fmt.Printf("Error fetching email aliasDomains: %v\n", err)
+		fmt.Printf("Error fetching e-mail aliasDomains: %v\n", err)
 		os.Exit(1)
 	}
 

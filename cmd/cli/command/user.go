@@ -73,7 +73,7 @@ func getUser(cmd *cobra.Command, args []string) {
 
 	users, err := miab.GetUsers(&config)
 	if err != nil {
-		fmt.Printf("Error fetching email users: %v\n", err)
+		fmt.Printf("Error fetching e-mail users: %v\n", err)
 		os.Exit(1)
 	}
 

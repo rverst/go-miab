@@ -17,8 +17,8 @@ var rootCmd = &cobra.Command{
 	Use:   "miab",
 	Short: "Miab is a cli tool for the Mail-in-a-Box API",
 	Long: `A cli tool for the Mail-in-a-Box API
-	Mail-in-a-Box can be found at https://mailinabox.email
-	Documentation is available at https://github.com/rverst/go-miab`,
+Mail-in-a-Box can be found at https://mailinabox.email
+The source is available at https://github.com/rverst/go-miab`,
 }
 
 func init() {
