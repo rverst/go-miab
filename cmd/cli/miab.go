@@ -1,6 +1,6 @@
 package main
 
-import "github.com/rverst/go-miab/command"
+import "github.com/rverst/go-miab/cmd/cli/command"
 
 const version = "1.0.0-beta1"
 

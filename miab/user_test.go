@@ -83,9 +83,9 @@ func TestMailDomain_ToString(t *testing.T) {
 	want := strings.Builder{}
 	want.WriteString(csvUserHead)
 	want.WriteByte('\n')
-	want.WriteString(`"example.org", "admin@example.org", "admin", "Active", ""`)
+	want.WriteString(`"example.org", "admin@example.org", "admin", "active", ""`)
 	want.WriteByte('\n')
-	want.WriteString(`"example.org", "user1@example.org", "", "Active", ""`)
+	want.WriteString(`"example.org", "user1@example.org", "", "active", ""`)
 	want.WriteByte('\n')
 	want.WriteString(`"example.org", "user2@example.org", "", "inactive", "/home/miab/mail/example.org/user2"`)
 	want.WriteByte('\n')
@@ -135,13 +135,13 @@ func TestMailDomains_ToString(t *testing.T) {
 	want := strings.Builder{}
 	want.WriteString(csvUserHead)
 	want.WriteByte('\n')
-	want.WriteString(`"example.org", "admin@example.org", "admin", "Active", ""`)
+	want.WriteString(`"example.org", "admin@example.org", "admin", "active", ""`)
 	want.WriteByte('\n')
-	want.WriteString(`"example.org", "user1@example.org", "", "Active", ""`)
+	want.WriteString(`"example.org", "user1@example.org", "", "active", ""`)
 	want.WriteByte('\n')
 	want.WriteString(`"example.org", "user2@example.org", "", "inactive", "/home/miab/mail/example.org/user2"`)
 	want.WriteByte('\n')
-	want.WriteString(`"example.com", "admin@example.com", "admin", "Active", ""`)
+	want.WriteString(`"example.com", "admin@example.com", "admin", "active", ""`)
 	want.WriteByte('\n')
 
 	got := testMailDomains.ToString(CSV)

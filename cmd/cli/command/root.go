@@ -17,16 +17,16 @@ var rootCmd = &cobra.Command{
 	Use:   "miab",
 	Short: "Miab is a cli tool for the Mail-in-a-Box API",
 	Long: `A cli tool for the Mail-in-a-Box API
-			Mail-in-a-Box can be found at https://mailinabox.email
-			Documentation is available at https://github.com/rverst/go-miab`,
+	Mail-in-a-Box can be found at https://mailinabox.email
+	Documentation is available at https://github.com/rverst/go-miab`,
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.config/go-miab/miab.yaml)")
-	rootCmd.PersistentFlags().StringP("user", "u", "", "user to authenticate, could be set via environment variables or config file")
-	rootCmd.PersistentFlags().StringP("password", "p", "", "password to authenticate, could be set via environment variables or config file")
-	rootCmd.PersistentFlags().StringP("endpoint", "e", "", "api endpoint, could be set via environment variables or config file")
+	rootCmd.PersistentFlags().StringP("user", "u", "", "user to authenticate, can be set via environment variable (MIAB_USER) or config file")
+	rootCmd.PersistentFlags().StringP("password", "p", "", "password to authenticate, can be set via environment variable (MIAB_PASSWORD) or config file")
+	rootCmd.PersistentFlags().StringP("endpoint", "e", "", "api endpoint, can be set via environment variable (MIAB_ENDPOINT) or config file")
 
 	viper.SetEnvPrefix("miab")
 
@@ -38,9 +38,7 @@ func init() {
 func initConfig() {
 
 	viper.AutomaticEnv()
-
 	cfg, err := miab.NewConfig(viper.GetString("user"), viper.GetString("password"), viper.GetString("endpoint"))
-
 	if err != nil && (viper.GetString("user") == "" || viper.GetString("password") == "" || viper.GetString("endpoint") == "") {
 		// not all parameters might have been provided, let's try the config file
 		if cfgFile != "" {
@@ -70,13 +68,13 @@ func initConfig() {
 		fmt.Println("Config is invalid:", err)
 		os.Exit(1)
 	}
-
 	config = *cfg
 }
 
 // Execute is the main entrance point for the cli parser an should be called from `func main()`
 func Execute(version string) {
 	rootCmd.Version = version
+	rootCmd.SetVersionTemplate(`{{printf "Mail-in-a-Box API command-line interface (%s) " .Name}}{{printf "version: %s" .Version}}`)
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
