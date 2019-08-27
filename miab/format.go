@@ -2,7 +2,6 @@ package miab
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -18,10 +17,17 @@ const (
 	csvAliasHead = `"domain", address", "displayAddress", "forwardsTo", "permittedSenders", "required"`
 )
 
-const JSON = Format(`json`)   // JSON - output in json format
-const YAML = Format(`yaml`)   // YAML - output in yaml format
-const CSV = Format(`csv`)     // CSV - output in csv format, comma separated
-const PLAIN = Format(`plain`) // PLAIN - output as plain text
+// JSON - output in json format
+const JSON = Format(`json`)
+
+// YAML - output in yaml format
+const YAML = Format(`yaml`)
+
+// CSV - output in csv format, comma separated
+const CSV = Format(`csv`)
+
+// PLAIN - output as plain text
+const PLAIN = Format(`plain`)
 
 func toString(i interface{}, format Format) (string, error) {
 	switch format {
@@ -79,7 +85,7 @@ func marshallCsv(i interface{}) (string, error) {
 	case Records, Record:
 		r.WriteString(csvDnsHead)
 	default:
-		return "", errors.New(fmt.Sprintf("unsupported type"))
+		return "", fmt.Errorf("unsupported type")
 	}
 
 	r.WriteByte('\n')

@@ -27,19 +27,41 @@ var (
 	errRtypeNotSet = errors.New("'rtype' has to be set")
 )
 
-const NONE = ResourceType(``)       // NONE means no resource type specified
-const A = ResourceType(`A`)         // A - IPv4 address record (RFC 1035)
-const AAAA = ResourceType(`AAAA`)   // AAAA - IPv4 address record (RFC 3596)
-const CAA = ResourceType(`CAA`)     // CAA - certification authority authorization (RFC 6844)
-const CNAME = ResourceType(`CNAME`) // CNAME - canonical name record (RFC 1035)
-const MX = ResourceType(`MX`)       // MX - mail exchange record (RFC 1035 and RFC 7505)
-const NS = ResourceType(`NS`)       // NS - name server record (RFC 1035)
-const SRV = ResourceType(`SRV`)     // SRV - service locator (RFC 2782)
-const SSHFP = ResourceType(`SSHFP`) // SSHFP - SSH public key fingerprint (RFC 4255)
-const TXT = ResourceType(`TXT`)     // TXT - text record (RFC 1035)
+// NONE means no resource type specified
+const NONE = ResourceType(``)
 
-const TCP4 = NetworkType(`tcp4`) // TCP4 - transport via TCP/IPv4
-const TCP6 = NetworkType(`tcp6`) // TCP6 - transport via TCP/IPv6
+// A - IPv4 address record (RFC 1035)
+const A = ResourceType(`A`)
+
+// AAAA - IPv4 address record (RFC 3596)
+const AAAA = ResourceType(`AAAA`)
+
+// CAA - certification authority authorization (RFC 6844)
+const CAA = ResourceType(`CAA`)
+
+// CNAME - canonical name record (RFC 1035)
+const CNAME = ResourceType(`CNAME`)
+
+// MX - mail exchange record (RFC 1035 and RFC 7505)
+const MX = ResourceType(`MX`)
+
+// NS - name server record (RFC 1035)
+const NS = ResourceType(`NS`)
+
+// SRV - service locator (RFC 2782)
+const SRV = ResourceType(`SRV`)
+
+// SSHFP - SSH public key fingerprint (RFC 4255)
+const SSHFP = ResourceType(`SSHFP`)
+
+// TXT - text record (RFC 1035)
+const TXT = ResourceType(`TXT`)
+
+// TCP4 - transport via TCP/IPv4
+const TCP4 = NetworkType(`tcp4`)
+
+// TCP6 - transport via TCP/IPv6
+const TCP6 = NetworkType(`tcp6`)
 
 var allResourceTypes = []ResourceType{A, AAAA, TXT, CNAME, MX, SRV, SSHFP, CAA, NS}
 

@@ -13,8 +13,11 @@ import (
 // Status describes the status of an e-mail account.
 type Status string
 
-const Active = Status("active")     // Active describes an active e-mail account.
-const Archived = Status("inactive") // Archived describes an archived (inactive) e-mail account.
+// Active describes an active e-mail account.
+const Active = Status("active")
+
+// Archived describes an archived (inactive) e-mail account.
+const Archived = Status("inactive")
 
 const (
 	usersPath = `admin/mail/users`

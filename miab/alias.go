@@ -2,7 +2,6 @@ package miab
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -105,9 +104,9 @@ func exeAlias(c *Config, path, body string) error {
 		}
 		bodyString := string(bodyBytes)
 		if len(bodyString) > 0 {
-			return errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+			return fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
 		}
-		return errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+		return fmt.Errorf("response error (%d)", res.StatusCode)
 	}
 	return nil
 }
@@ -134,9 +133,9 @@ func GetAliases(c *Config) (AliasDomains, error) {
 		}
 		bodyString := string(bodyBytes)
 		if len(bodyString) > 0 {
-			return nil, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+			return nil, fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
 		}
-		return nil, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+		return nil, fmt.Errorf("response error (%d)", res.StatusCode)
 	}
 
 	var result AliasDomains
