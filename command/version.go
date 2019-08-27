@@ -16,10 +16,10 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number of go-miab",
 	Long:  `All software has versions. This is go-miab's`,
-	Run:   Version,
+	Run:   printVersion,
 }
 
-func Version(cmd *cobra.Command, args []string) {
+func printVersion(cmd *cobra.Command, args []string) {
 	fmt.Print(version(rootCmd.Version))
 }
 

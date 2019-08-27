@@ -106,9 +106,8 @@ func exeAlias(c *Config, path, body string) error {
 		bodyString := string(bodyBytes)
 		if len(bodyString) > 0 {
 			return errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
-		} else {
-			return errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
 		}
+		return errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
 	}
 	return nil
 }
@@ -136,9 +135,8 @@ func GetAliases(c *Config) (AliasDomains, error) {
 		bodyString := string(bodyBytes)
 		if len(bodyString) > 0 {
 			return nil, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
-		} else {
-			return nil, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
 		}
+		return nil, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
 	}
 
 	var result AliasDomains
@@ -148,7 +146,7 @@ func GetAliases(c *Config) (AliasDomains, error) {
 	return result, nil
 }
 
-// Adds a new alias.
+// AddAlias adds a new alias.
 // The parameter `forwardsTo` can be a comma separated list of addresses.
 func AddAlias(c *Config, address, forwardsTo string) error {
 

@@ -18,12 +18,10 @@ const (
 	csvAliasHead = `"domain", address", "displayAddress", "forwardsTo", "permittedSenders", "required"`
 )
 
-const (
-	JSON  = Format(`json`)  // JSON - output in json format
-	YAML  = Format(`yaml`)  // YAML - output in yaml format
-	CSV   = Format(`csv`)   // CSV - output in csv format, comma separated
-	PLAIN = Format(`plain`) // PLAIN - output as plain text
-)
+const JSON = Format(`json`)   // JSON - output in json format
+const YAML = Format(`yaml`)   // YAML - output in yaml format
+const CSV = Format(`csv`)     // CSV - output in csv format, comma separated
+const PLAIN = Format(`plain`) // PLAIN - output as plain text
 
 func toString(i interface{}, format Format) (string, error) {
 	switch format {

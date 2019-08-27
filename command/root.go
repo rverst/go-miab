@@ -74,6 +74,7 @@ func initConfig() {
 	config = *cfg
 }
 
+// Execute is the main entrance point for the cli parser an should be called from `func main()`
 func Execute(version string) {
 	rootCmd.Version = version
 	if err := rootCmd.Execute(); err != nil {

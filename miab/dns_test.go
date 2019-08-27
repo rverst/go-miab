@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"net/http"
@@ -37,27 +36,26 @@ func basicAuthHeader(username, password string) string {
 func getDnsTestServer(t *testing.T, method string, status int, response string, rtype ResourceType, testUri bool, body string) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		var err error = nil
-
+		var err error
 		if r.Header.Get("Authorization") != basicAuthHeader("test", "secret") {
 			t.Error("authentication failed")
-			err = errors.New(fmt.Sprintf("authentication failed; want: %s - got: %s",
-				basicAuthHeader("test", "secret"), r.Header.Get("Authorization")))
+			err = fmt.Errorf("authentication failed; want: %s - got: %s",
+				basicAuthHeader("test", "secret"), r.Header.Get("Authorization"))
 		}
 
 		if r.Method != method {
-			err = errors.New(fmt.Sprintf("invalid http method, want: %s, got: %s", method, r.Method))
+			err = fmt.Errorf("invalid http method, want: %s, got: %s", method, r.Method)
 		}
 
 		if testUri && r.RequestURI != fmt.Sprintf("/%s", dnsPath("test.example.org", rtype)) {
-			err = errors.New(fmt.Sprintf("invalid request uri, want: %s, got: %s",
-				fmt.Sprintf("/%s", dnsPath("test.example.org", rtype)), r.RequestURI))
+			err = fmt.Errorf("invalid request uri, want: %s, got: %s",
+				fmt.Sprintf("/%s", dnsPath("test.example.org", rtype)), r.RequestURI)
 		}
 
 		buf := new(bytes.Buffer)
 		_, _ = buf.ReadFrom(r.Body)
 		if buf.String() != body {
-			err = errors.New(fmt.Sprintf("invalid body, want: %s, got: %s", body, buf.String()))
+			err = fmt.Errorf("invalid body, want: %s, got: %s", body, buf.String())
 		}
 
 		if err != nil {

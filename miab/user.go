@@ -2,7 +2,6 @@ package miab
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,10 +13,8 @@ import (
 // Status describes the status of an e-mail account.
 type Status string
 
-const (
-	Active   = Status("active")   // Active describes an active e-mail account.
-	Archived = Status("inactive") // Archived describes an archived (inactive) e-mail account.
-)
+const Active = Status("active")     // Active describes an active e-mail account.
+const Archived = Status("inactive") // Archived describes an archived (inactive) e-mail account.
 
 const (
 	usersPath = `admin/mail/users`
@@ -57,6 +54,7 @@ type MailDomain struct {
 	Users  Users  `json:"users"`  // Users is a list of User of the domain.
 }
 
+// User defines an e-mail account.
 type User struct {
 	Email      string      `json:"email"`      // Email is the e-mail address.
 	Privileges interface{} `json:"privileges"` // Privileges is a list of privileges, given to the user. Note: due to a bug in Mail-in-a-Box < v0.42, we have to use an generic interface, because the datatype differs in Archived users (string instead of array).
@@ -114,10 +112,9 @@ func execUser(c *Config, path, body string) error {
 		}
 		bodyString := string(bodyBytes)
 		if len(bodyString) > 0 {
-			return errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
-		} else {
-			return errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+			return fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
 		}
+		return fmt.Errorf("response error (%d)", res.StatusCode)
 	}
 	return nil
 }
@@ -144,10 +141,9 @@ func GetUsers(c *Config) (MailDomains, error) {
 		}
 		bodyString := string(bodyBytes)
 		if len(bodyString) > 0 {
-			return nil, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
-		} else {
-			return nil, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+			return nil, fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
 		}
+		return nil, fmt.Errorf("response error (%d)", res.StatusCode)
 	}
 
 	var result MailDomains

@@ -27,26 +27,23 @@ var (
 	errRtypeNotSet = errors.New("'rtype' has to be set")
 )
 
-const (
-	NONE  = ResourceType(``)      // NONE means no resource type specified
-	A     = ResourceType(`A`)     // A - IPv4 address record (RFC 1035)
-	AAAA  = ResourceType(`AAAA`)  // AAAA - IPv4 address record (RFC 3596)
-	CAA   = ResourceType(`CAA`)   // CAA - certification authority authorization (RFC 6844)
-	CNAME = ResourceType(`CNAME`) // CNAME - canonical name record (RFC 1035)
-	MX    = ResourceType(`MX`)    // MX - mail exchange record (RFC 1035 and RFC 7505)
-	NS    = ResourceType(`NS`)    // NS - name server record (RFC 1035)
-	SRV   = ResourceType(`SRV`)   // SRV - service locator (RFC 2782)
-	SSHFP = ResourceType(`SSHFP`) // SSHFP - SSH public key fingerprint (RFC 4255)
-	TXT   = ResourceType(`TXT`)   // TXT - text record (RFC 1035)
-)
+const NONE = ResourceType(``)       // NONE means no resource type specified
+const A = ResourceType(`A`)         // A - IPv4 address record (RFC 1035)
+const AAAA = ResourceType(`AAAA`)   // AAAA - IPv4 address record (RFC 3596)
+const CAA = ResourceType(`CAA`)     // CAA - certification authority authorization (RFC 6844)
+const CNAME = ResourceType(`CNAME`) // CNAME - canonical name record (RFC 1035)
+const MX = ResourceType(`MX`)       // MX - mail exchange record (RFC 1035 and RFC 7505)
+const NS = ResourceType(`NS`)       // NS - name server record (RFC 1035)
+const SRV = ResourceType(`SRV`)     // SRV - service locator (RFC 2782)
+const SSHFP = ResourceType(`SSHFP`) // SSHFP - SSH public key fingerprint (RFC 4255)
+const TXT = ResourceType(`TXT`)     // TXT - text record (RFC 1035)
 
-const (
-	TCP4 = NetworkType(`tcp4`) // TCP4 - transport via TCP/IPv4
-	TCP6 = NetworkType(`tcp6`) // TCP6 - transport via TCP/IPv6
-)
+const TCP4 = NetworkType(`tcp4`) // TCP4 - transport via TCP/IPv4
+const TCP6 = NetworkType(`tcp6`) // TCP6 - transport via TCP/IPv6
 
 var allResourceTypes = []ResourceType{A, AAAA, TXT, CNAME, MX, SRV, SSHFP, CAA, NS}
 
+// IsValid checks if the ResourceType is valid (supported by the Mail-in-a-Box API).
 func (r *ResourceType) IsValid() bool {
 
 	for _, t := range allResourceTypes {
@@ -57,6 +54,7 @@ func (r *ResourceType) IsValid() bool {
 	return false
 }
 
+// ParseDnsResource parses the provided string to a ResourceType if possible.
 func ParseDnsResource(value string) (ResourceType, error) {
 
 	var rtype = ResourceType(strings.ToUpper(value))
@@ -64,7 +62,7 @@ func ParseDnsResource(value string) (ResourceType, error) {
 		return rtype, nil
 	}
 
-	return NONE, errors.New(fmt.Sprintf("'%s' is not a valid resource type", value))
+	return NONE, fmt.Errorf("'%s' is not a valid resource type", value)
 }
 
 func dnsPath(qname string, rtype ResourceType) string {
@@ -158,14 +156,14 @@ func execDns(c *Config, method, qname string, rtype ResourceType, value string) 
 
 	if res.StatusCode != 200 {
 		if len(bodyString) > 0 {
-			return false, errors.New(fmt.Sprintf("response error (%d): %s", res.StatusCode, bodyString))
+			return false, fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
 		}
-		return false, errors.New(fmt.Sprintf("response error (%d)", res.StatusCode))
+		return false, fmt.Errorf("response error (%d)", res.StatusCode)
 	}
 	if strings.HasPrefix(bodyString, "updated DNS:") {
 		return true, nil
 	}
-	return false, errors.New(fmt.Sprintf("unexpected response body: %s", bodyString))
+	return false, fmt.Errorf("unexpected response body: %s", bodyString)
 }
 
 // GetDns returns matching custom DNS records. The optional qname and rtype parameters
@@ -197,9 +195,8 @@ func GetDns(c *Config, qname string, rtype ResourceType) (Records, error) {
 		bodyString := string(bodyBytes)
 		if len(bodyString) > 0 {
 			return nil, fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
-		} else {
-			return nil, fmt.Errorf("response error (%d)", res.StatusCode)
 		}
+		return nil, fmt.Errorf("response error (%d)", res.StatusCode)
 	}
 
 	var result Records
@@ -289,9 +286,8 @@ func SetOrAddAddressRecord(c *Config, network NetworkType, qname, value string, 
 	if res.StatusCode != 200 {
 		if len(bodyString) > 0 {
 			return false, fmt.Errorf("response error (%d): %s", res.StatusCode, bodyString)
-		} else {
-			return false, fmt.Errorf("response error (%d)", res.StatusCode)
 		}
+		return false, fmt.Errorf("response error (%d)", res.StatusCode)
 	}
 	if strings.HasPrefix(bodyString, "updated DNS:") {
 		return true, nil
