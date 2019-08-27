@@ -1,4 +1,4 @@
-package cmd
+package command
 
 import (
 	"fmt"
@@ -74,9 +74,9 @@ func initConfig() {
 	config = *cfg
 }
 
-func Execute() {
+func Execute(version string) {
+	rootCmd.Version = version
 	if err := rootCmd.Execute(); err != nil {
-		//fmt.Println(err)
 		os.Exit(1)
 	}
 }
