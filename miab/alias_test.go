@@ -45,17 +45,6 @@ var testAliasDomains = AliasDomains{
 	testAliasDomain2,
 }
 
-func TestAliasDomain_Print(t *testing.T) {
-	fmt.Print("\nplain:\t")
-	testAliasDomain1.Print(PLAIN)
-	fmt.Print("\njson:\t")
-	testAliasDomain1.Print(JSON)
-	fmt.Print("\nyaml:\t")
-	testAliasDomain1.Print(YAML)
-	fmt.Print("\ncsv :\t")
-	testAliasDomain1.Print(CSV)
-}
-
 func TestAliasDomain_String(t *testing.T) {
 
 	want := `example.org:
@@ -102,17 +91,6 @@ func TestAliasDomain_ToString(t *testing.T) {
 	if got != want.String() {
 		t.Errorf("wrong format, want: \n+++%s+++\n\ngot:\n+++%s+++", want.String(), got)
 	}
-}
-
-func TestAliasDomains_Print(t *testing.T) {
-	fmt.Print("\nplain:\t")
-	testAliasDomains.Print(PLAIN)
-	fmt.Print("\njson:\t")
-	testAliasDomains.Print(JSON)
-	fmt.Print("\nyaml:\t")
-	testAliasDomains.Print(YAML)
-	fmt.Print("\ncsv :\t")
-	testAliasDomains.Print(CSV)
 }
 
 func TestAliasDomains_String(t *testing.T) {

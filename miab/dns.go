@@ -80,10 +80,6 @@ func dnsPath(qname string, rtype ResourceType) string {
 
 type Records []Record
 
-func (r Records) Print(format Formats) {
-	print(r, format)
-}
-
 func (r Records) ToString(format Formats) string {
 	s, err := toString(r, format)
 	if err != nil {
@@ -108,10 +104,6 @@ type Record struct {
 	QName string       `json:"qname"`
 	RType ResourceType `json:"rtype"`
 	Value string       `json:"value"`
-}
-
-func (r Record) Print(format Formats) {
-	print(r, format)
 }
 
 func (r Record) ToString(format Formats) string {

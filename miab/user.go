@@ -37,10 +37,6 @@ func (m MailDomains) String() string {
 	return r.String()
 }
 
-func (m MailDomains) Print(format Formats) {
-	print(m, format)
-}
-
 func (m MailDomains) ToString(format Formats) string {
 	s, err := toString(m, format)
 	if err != nil {
@@ -79,10 +75,6 @@ func (m MailDomain) String() string {
 		r.WriteString(fmt.Sprintf("\t%s", u.Email))
 	}
 	return r.String()
-}
-
-func (m MailDomain) Print(format Formats) {
-	print(m, format)
 }
 
 func (m MailDomain) ToString(format Formats) string {

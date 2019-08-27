@@ -70,20 +70,7 @@ func getDnsTestServer(t *testing.T, method string, status int, response string, 
 	}))
 }
 
-func
-TestRecord_Print(t *testing.T) {
-	fmt.Print("\nplain:\t")
-	testRec1.Print(PLAIN)
-	fmt.Print("\njson:\t")
-	testRec1.Print(JSON)
-	fmt.Print("\nyaml:\t")
-	testRec1.Print(YAML)
-	fmt.Print("\ncsv :\t")
-	testRec1.Print(CSV)
-}
-
-func
-TestRecord_String(t *testing.T) {
+func TestRecord_String(t *testing.T) {
 
 	want := "example.org	A	127.0.0.1"
 	got := testRec1.String()
@@ -93,8 +80,7 @@ TestRecord_String(t *testing.T) {
 	}
 }
 
-func
-TestRecord_ToString(t *testing.T) {
+func TestRecord_ToString(t *testing.T) {
 
 	var record Record
 	err := json.Unmarshal([]byte(testRec1.ToString(JSON)), &record)
@@ -114,20 +100,7 @@ TestRecord_ToString(t *testing.T) {
 	}
 }
 
-func
-TestRecords_Print(t *testing.T) {
-	fmt.Print("\nplain:\t")
-	testRecs.Print(PLAIN)
-	fmt.Print("\njson:\t")
-	testRecs.Print(JSON)
-	fmt.Print("\nyaml:\t")
-	testRecs.Print(YAML)
-	fmt.Print("\ncsv :\t")
-	testRecs.Print(CSV)
-}
-
-func
-TestRecords_String(t *testing.T) {
+func TestRecords_String(t *testing.T) {
 
 	want := "example.org	A	127.0.0.1\nexample.org	AAAA	::1"
 	s := testRecs.String()
@@ -137,8 +110,7 @@ TestRecords_String(t *testing.T) {
 	}
 }
 
-func
-TestRecords_ToString(t *testing.T) {
+func TestRecords_ToString(t *testing.T) {
 
 	var records Records
 	err := json.Unmarshal([]byte(testRecs.ToString(JSON)), &records)
@@ -161,7 +133,6 @@ TestRecords_ToString(t *testing.T) {
 		t.Errorf("wrong format, expected: \n%s\n\ngot:\n%s", expectedCsv, c)
 	}
 }
-
 
 func TestResourceType_IsValid(t *testing.T) {
 	testCases := []struct {

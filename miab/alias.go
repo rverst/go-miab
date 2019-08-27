@@ -17,10 +17,6 @@ const (
 
 type AliasDomains []AliasDomain
 
-func (a AliasDomains) Print(format Formats) {
-	print(a, format)
-}
-
 func (a AliasDomains) ToString(format Formats) string {
 	s, err := toString(a, format)
 	if err != nil {
@@ -61,10 +57,6 @@ func (a AliasDomain) String() string {
 		}
 	}
 	return r.String()
-}
-
-func (a AliasDomain) Print(format Formats) {
-	print(a, format)
 }
 
 func (a AliasDomain) ToString(format Formats) string {

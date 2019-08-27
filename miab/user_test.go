@@ -50,17 +50,6 @@ var testMailDomains = MailDomains{
 	testMailDomain2,
 }
 
-func TestMailDomain_Print(t *testing.T) {
-	fmt.Print("\nplain:\t")
-	testMailDomain1.Print(PLAIN)
-	fmt.Print("\njson:\t")
-	testMailDomain1.Print(JSON)
-	fmt.Print("\nyaml:\t")
-	testMailDomain1.Print(YAML)
-	fmt.Print("\ncsv :\t")
-	testMailDomain1.Print(CSV)
-}
-
 func TestMailDomain_String(t *testing.T) {
 	want := `example.org:
 	admin@example.org
@@ -105,17 +94,6 @@ func TestMailDomain_ToString(t *testing.T) {
 	if got != want.String() {
 		t.Errorf("wrong format, want: \n+++%s+++\n\ngot:\n+++%s+++", want.String(), got)
 	}
-}
-
-func TestMailDomains_Print(t *testing.T) {
-	fmt.Print("\nplain:\t")
-	testMailDomains.Print(PLAIN)
-	fmt.Print("\njson:\t")
-	testMailDomains.Print(JSON)
-	fmt.Print("\nyaml:\t")
-	testMailDomains.Print(YAML)
-	fmt.Print("\ncsv :\t")
-	testMailDomains.Print(CSV)
 }
 
 func TestMailDomains_String(t *testing.T) {

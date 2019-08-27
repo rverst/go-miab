@@ -24,28 +24,6 @@ const (
 	PLAIN = Formats(`plain`)
 )
 
-func print(i interface{}, format Formats) {
-	var s string
-	var err error
-
-	switch format {
-	case JSON:
-		s, err = marshallJson(i)
-	case YAML:
-		s, err = marshallYaml(i)
-	case CSV:
-		s, err = marshallCsv(i)
-	default:
-		s, err = toString(i, PLAIN)
-	}
-
-	if err != nil {
-		fmt.Print("unexpected error", err)
-		os.Exit(1)
-	}
-	fmt.Print(s)
-}
-
 func toString(i interface{}, format Formats) (string, error) {
 	switch format {
 	case JSON:
