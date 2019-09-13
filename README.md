@@ -6,7 +6,9 @@ go-miab is a simple command-line tool, designed to manage a [Mail-in-a-Box](http
 
 ## Overview
 
-go-miab contains the package `miab` that wraps the API of a Mail-in-a-Box instance. Additionally there is an command-line interface (CLI) to access the Mail-in-a-Box API directly. Most of the endpoints, that the Mail-in-a-Box API provides should be covered (Mail-in-a-Box v0.42b).
+go-miab contains the package `miab` that wraps the API of a Mail-in-a-Box instance.
+Additionally there is an command-line interface (CLI) to access the Mail-in-a-Box API directly.
+Most of the endpoints, that the Mail-in-a-Box API provides should be covered (Mail-in-a-Box v0.42b).
 
 * Query custom DNS records
 * Add or set (overwrite) custom DNS records
@@ -19,11 +21,15 @@ go-miab contains the package `miab` that wraps the API of a Mail-in-a-Box instan
 * Create e-mail aliases
 * Delete e-mail aliases
 
+There is also a small tool to update a custom DNS address record regularly.
+I use this tool, running in a docker container on my NAS, to update my address record 
+(changing IP's) at home. This tool was the occasion to write go-miab at all :-).
+
 ## Installation
 
 ### Binary Release
 
-Download a binary release from the [release page](github.com/rverst/go-miab/releases).
+Download a binary release from the [release page](https://github.com/rverst/go-miab/releases).
 
 ### Go
 
