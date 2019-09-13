@@ -93,4 +93,4 @@ go-miab uses and relies on the following, awesome libraries (in lexical order):
 | [github.com/spf13/cobra](https://github.com/spf13/cobra) | [Apache License 2.0](https://github.com/spf13/cobra/blob/master/LICENSE.txt) |
 | [github.com/spf13/pflag](https://github.com/spf13/pflag) | [BSD 3-Clause "New" or "Revised" License](https://github.com/spf13/pflag/blob/master/LICENSE) |
 | [github.com/spf13/viper](https://github.com/spf13/viper) | [MIT License](https://github.com/spf13/viper/blob/master/LICENSE) |
-| [gopkg.in/yaml.v2](https://gopkg.in/yaml.v2) | [Apache License 2.0](https://github.com/go-yaml/yaml/blob/v2/LICENSE) |
+| [gopkg.in/yaml.v3](https://gopkg.in/yaml.v3) | [MIT License and Apache License 2.0](https://github.com/go-yaml/yaml/blob/v3/LICENSE) |
