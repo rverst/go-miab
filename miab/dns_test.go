@@ -459,13 +459,17 @@ func TestUpdateDns4(t *testing.T) {
 	}{
 		{"UpdateDns4 OK val", "test.example.org", "127.0.0.1", true, false},
 		{"UpdateDns4 OK non val", "test.example.org", "", true, false},
+		{"UpdateDns4 OK val", "*.test.example.org", "127.0.0.1", true, false},
+		{"UpdateDns4 OK non val", "sub.test.example.org", "", true, false},
+		{"UpdateDns4 OK val", "sub.sub.test.example.org", "127.0.0.1", true, false},
+		{"UpdateDns4 OK non val", "example.org", "", true, false},
 	}
 
 	for _, tc := range testCases {
 
 		t.Run(tc.name, func(t *testing.T) {
 
-			ts := getDnsTestServer(t, http.MethodPut, 200, fmt.Sprintf("updated DNS: %s", tc.value), A, true, tc.value)
+			ts := getDnsTestServer(t, http.MethodPut, 200, fmt.Sprintf("updated DNS: %s", tc.value), A, false, tc.value)
 			defer ts.Close()
 
 			c, _ := NewConfig("test", "secret", ts.URL)

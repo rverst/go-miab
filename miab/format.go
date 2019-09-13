@@ -3,9 +3,8 @@ package miab
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/yaml.v2"
-	"os"
 	"strings"
+	"gopkg.in/yaml.v3"
 )
 
 // Format defines an output format (e.g. `json`, `yaml`, ...)
@@ -68,8 +67,7 @@ func marshallJson(i interface{}) (string, error) {
 func marshallYaml(i interface{}) (string, error) {
 	r, err := yaml.Marshal(i)
 	if err != nil {
-		fmt.Printf("Error marshalling yaml: %v\n", err)
-		os.Exit(1)
+		return "", err
 	}
 	return string(r), nil
 }
