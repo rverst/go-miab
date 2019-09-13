@@ -311,7 +311,7 @@ func SetOrAddAddressRecord(c *Config, network NetworkType, qname, value string, 
 		}
 		return false, fmt.Errorf("response error (%d)", res.StatusCode)
 	}
-	if strings.HasPrefix(bodyString, "updated DNS:") {
+	if bodyString == "OK" || strings.HasPrefix(bodyString, "updated DNS:") {
 		return true, nil
 	}
 	return false, fmt.Errorf("unexpected response body: %s", bodyString)
