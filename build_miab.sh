@@ -1,11 +1,24 @@
 #! /bin/bash
 
-VERSION="1.0.0"
-
 #The build script is designed to run in the official golang docker container, which does not have 'zip' installed.
-#So we just install it.
-command -v zip >/dev/null 2>&1 || { apt-get update && apt-get -y install zip; }
-#command -v zip >/dev/null 2>&1 || { echo "Scrips need 'zip' to pack the windows binaries."; exit 1; }
+#So we just install it. If you use the scipt otherwise, disable the installation and exit the script at this stage.
+if [[ ! $(command -v zip) ]]; then
+  echo "This script needs 'zip' to pack the windows binaries."
+  apt-get update && apt-get -y install zip
+  #exit 1
+fi
+
+if [[ $(command -v git) ]]; then
+  VERSION=$(git tag -l 'v*')
+  COMHASH=$(git rev-parse --short HEAD)
+else
+  VERSION=$1
+fi
+
+echo $VERSION
+echo $COMHASH
+exit 0
+VERSION="1.0.0"
 
 DIR=$PWD
 
