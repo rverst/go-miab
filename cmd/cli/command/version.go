@@ -22,7 +22,7 @@ var versionCmd = &cobra.Command{
 func printVersion(cmd *cobra.Command, args []string) {
 
 	if b, _ := cmd.Flags().GetBool("extended"); !b {
-		fmt.Print(Version)
+		fmt.Println(Version)
 		return
 	}
 
