@@ -10,6 +10,13 @@ import (
 	"path"
 )
 
+//these variables are set in the build process via `ldflags`
+var (
+	Version    = "unknown"
+	CommitHash = "unknown"
+	BuildDate  = "unknown"
+)
+
 var cfgFile string
 var config miab.Config
 
@@ -22,7 +29,7 @@ The source is available at https://github.com/rverst/go-miab`,
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.config/go-miab/miab.yaml)")
 	rootCmd.PersistentFlags().StringP("user", "u", "", "user to authenticate, can be set via environment variable (MIAB_USER) or config file")
 	rootCmd.PersistentFlags().StringP("password", "p", "", "password to authenticate, can be set via environment variable (MIAB_PASSWORD) or config file")
@@ -35,7 +42,7 @@ func init() {
 	_ = viper.BindPFlag("endpoint", rootCmd.PersistentFlags().Lookup("endpoint"))
 }
 
-func initConfig() {
+func initConfig(cmd *cobra.Command, args []string) {
 
 	viper.AutomaticEnv()
 	cfg, err := miab.NewConfig(viper.GetString("user"), viper.GetString("password"), viper.GetString("endpoint"))
@@ -72,9 +79,7 @@ func initConfig() {
 }
 
 // Execute is the main entrance point for the cli parser an should be called from `func main()`
-func Execute(version string) {
-	rootCmd.Version = version
-	rootCmd.SetVersionTemplate(`{{printf "Mail-in-a-Box API command-line interface (%s) " .Name}}{{printf "version: %s" .Version}}`)
+func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

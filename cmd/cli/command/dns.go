@@ -40,6 +40,7 @@ var dnsGetCmd = &cobra.Command{
 			NOTE: If you use the qname-flag, the rtype-flag defaults to 'A'.`,
 	Args: cobra.NoArgs,
 	Run:  getDns,
+	PersistentPreRun: initConfig,
 }
 
 var dnsSetCmd = &cobra.Command{

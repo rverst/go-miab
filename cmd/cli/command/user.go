@@ -31,6 +31,7 @@ var userGetCmd = &cobra.Command{
 	Long:  `Get all mail user of the server, use the domain-flag to filter the output.`,
 	Args:  cobra.NoArgs,
 	Run:   getUser,
+	PersistentPreRun: initConfig,
 }
 
 var userAddCmd = &cobra.Command{

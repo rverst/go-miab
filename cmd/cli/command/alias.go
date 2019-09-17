@@ -29,6 +29,7 @@ var aliasGetCmd = &cobra.Command{
 	Long:  `Get all a-mail aliases for the users of the server, use the domain-flag to filter the output.`,
 	Args:  cobra.NoArgs,
 	Run:   getAlias,
+	PersistentPreRun: initConfig,
 }
 
 var aliasAddCmd = &cobra.Command{
