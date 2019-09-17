@@ -43,7 +43,7 @@ function main() {
 
     if [[ ! $VERSION ]]; then
       TAGS=$(git tag -l 'v*' --points-at "$COMHASH")
-      VERSION=$(checkVersion "$TAGS")
+      VERSION=$(checkVersionEx "$TAGS")
       if [[ ! $VERSION ]]; then
         printf "Can't find a valid version tag on HEAD, please provide the version as parameter.\n"
         printf  "Either there is no valid tag (e.g. v1.0.0) or there is more than one.\n"
@@ -72,9 +72,6 @@ function main() {
   fi
 
   mkdir -p "$BUILDDIR"
-
-  echo "$DIR"
-  echo "$BUILDDIR"
 
   touch "$CHECKSUM"
   echo "sha256 checksums" >"$CHECKSUM"
@@ -119,4 +116,5 @@ function main() {
 
 }
 
+checkDependencies
 main "$1"
