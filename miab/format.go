@@ -3,8 +3,8 @@ package miab
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"gopkg.in/yaml.v3"
+	"strings"
 )
 
 // Format defines an output format (e.g. `json`, `yaml`, ...)

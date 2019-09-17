@@ -31,8 +31,10 @@ I use this tool, running in a docker container on my NAS, to update my address r
 
 Download a binary release from the [release page](https://github.com/rverst/go-miab/releases).
 
-Build in the official golang docker container: 
+Build miab in the official golang docker container: 
 ```bash
+git clone https://github.com/rverst/go-miab.git
+cd go-miab
 sudo docker run --rm -it -v "$PWD":/usr/src/miab -w /usr/src/miab golang:1.12.9 ./build_miab.sh
 ```
 

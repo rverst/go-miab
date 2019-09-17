@@ -11,7 +11,7 @@ var (
 	regexUrl  = *regexp.MustCompile(`^(?P<schema>https?)://(?P<domain>.+)$`)
 	errNoUser = errors.New("'user' not specified")
 	errNoPass = errors.New("'password' not specified")
-	errInvUrl = errors.New("'dnsUrl' is not valid")
+	errInvUrl = errors.New("'url' is not valid")
 )
 
 // Config holds the details to communicate with the Mail-in-a-Box API.
