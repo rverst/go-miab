@@ -3,6 +3,9 @@
 go-miab is a simple command-line tool, designed to manage a [Mail-in-a-Box](https://mailinabox.email/), written in [Go](https://golang.org/).
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/rverst/go-miab)](https://goreportcard.com/report/github.com/rverst/go-miab)
+[![GoDoc](https://godoc.org/github.com/rverst/go-miab/miab?status.svg)](https://godoc.org/github.com/rverst/go-miab/miab)
+
+
 
 ## Overview
 
