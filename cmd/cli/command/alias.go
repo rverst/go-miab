@@ -24,11 +24,11 @@ func init() {
 }
 
 var aliasGetCmd = &cobra.Command{
-	Use:   "alias",
-	Short: "Get existing a-mail aliases for users.",
-	Long:  `Get all a-mail aliases for the users of the server, use the domain-flag to filter the output.`,
-	Args:  cobra.NoArgs,
-	Run:   getAlias,
+	Use:              "alias",
+	Short:            "Get existing a-mail aliases for users",
+	Long:             `Get all a-mail aliases for the users of the server, use the domain-flag to filter the output.`,
+	Args:             cobra.NoArgs,
+	Run:              getAlias,
 	PersistentPreRun: initConfig,
 }
 

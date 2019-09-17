@@ -33,19 +33,19 @@ func init() {
 
 var dnsGetCmd = &cobra.Command{
 	Use:   "dns",
-	Short: "Get existing dns entries.",
+	Short: "Get existing dns entries",
 	Long: `Get all dns entries of the server, use the domain-flag to filter the output.
 			Due to a wired behavior of the Mail-in-a-box API, you can use the qname-flag and the rtype-flag
 			to filter exactly one record, in this case the the domain-flag will be ignored. 
 			NOTE: If you use the qname-flag, the rtype-flag defaults to 'A'.`,
-	Args: cobra.NoArgs,
-	Run:  getDns,
+	Args:             cobra.NoArgs,
+	Run:              getDns,
 	PersistentPreRun: initConfig,
 }
 
 var dnsSetCmd = &cobra.Command{
 	Use:   "set",
-	Short: "Sets a custom DNS record replacing any existing records with the same `qname` and `rtype`.",
+	Short: "Sets a custom DNS record replacing any existing records with the same `qname` and `rtype`",
 	Long: `Sets a custom DNS record replacing any existing records with the same 'qname' and 'rtype'. 
 Use 'set' (instead of 'add') when you only have one value for a 'qname' and 'rtype',
 such as typical A records (without round-robin).`,
@@ -55,7 +55,7 @@ such as typical A records (without round-robin).`,
 
 var dnsAddCmd = &cobra.Command{
 	Use:   "add",
-	Short: "Adds a new custom DNS record. Use 'add' when you have multiple TXT records or round-robin A records.",
+	Short: "Adds a new custom DNS record. Use 'add' when you have multiple TXT records or round-robin A records",
 	Long: `Adds a new custom DNS record. Use 'add' when you have multiple TXT records or round-robin A records.
 ('set' would delete previously added records.)`,
 	Args: cobra.NoArgs,
@@ -64,7 +64,7 @@ var dnsAddCmd = &cobra.Command{
 
 var dnsDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "Deletes custom DNS records.",
+	Short: "Deletes custom DNS records",
 	Long: `Deletes custom DNS records. If the value-flag is omitted, it deletes all records matching the
 qname-flag and rtype-flag.`,
 	Args: cobra.NoArgs,

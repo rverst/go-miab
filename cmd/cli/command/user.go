@@ -26,11 +26,11 @@ func init() {
 }
 
 var userGetCmd = &cobra.Command{
-	Use:   "user",
-	Short: "Get existing mail users.",
-	Long:  `Get all mail user of the server, use the domain-flag to filter the output.`,
-	Args:  cobra.NoArgs,
-	Run:   getUser,
+	Use:              "user",
+	Short:            "Get existing mail users",
+	Long:             `Get all mail user of the server, use the domain-flag to filter the output.`,
+	Args:             cobra.NoArgs,
+	Run:              getUser,
 	PersistentPreRun: initConfig,
 }
 
